@@ -19,8 +19,8 @@
     #splash p { font-size: 1rem; opacity: 0.85; margin-bottom: 2rem; }
     #splash button { background: #fff; color: #0f766e; border: none; padding: 14px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
     
-    /* CREATOR TEXT */
-    #splash .creator { position: absolute; bottom: 40px; font-size: 0.9rem; opacity: 0.8; letter-spacing: 1px; font-weight: 400; }
+    /* CREATOR TEXT (Đã đưa lên trên cùng) */
+    #splash .creator { position: absolute; top: 60px; font-size: 0.9rem; opacity: 0.8; letter-spacing: 1px; font-weight: 400; }
 
     /* BANNER */
     #update-banner { display: none; background: #fbbf24; color: #78350f; padding: 12px; text-align: center; font-weight: 600; cursor: pointer; position: sticky; top: 0; z-index: 100; }
@@ -103,16 +103,15 @@
     .stats-table td.best-price { background: #dcfce7; color: #166534; font-weight: 700; border-radius: 6px; }
     .stats-table td.no-data { color: #9ca3af; font-style: italic; }
 
-    /* TABS */
+    /* TABS (Hạ thấp & Full trắng đáy) */
     .tab-bar { 
-      position: fixed; bottom: 30px; left: 0; right: 0; background: #fff; 
+      position: fixed; bottom: 0; left: 0; right: 0; background: #fff; 
       display: flex; border-top: 1px solid #e5e7eb; 
-      padding-bottom: calc(20px + env(safe-area-inset-bottom)); 
+      padding-bottom: calc(30px + env(safe-area-inset-bottom)); /* Kéo dài trắng xuống đáy */
       box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000;
-      border-radius: 20px 20px 0 0; 
     }
-    .tab-btn { flex: 1; padding: 16px 4px 20px 4px; background: none; border: none; font-size: 0.75rem; color: #9ca3af; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-    .tab-btn .icon { font-size: 1.4rem; }
+    .tab-btn { flex: 1; padding: 12px 4px 16px 4px; background: none; border: none; font-size: 0.75rem; color: #9ca3af; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .tab-btn .icon { font-size: 1.8rem; } /* Tăng kích thước icon */
     .tab-btn.active { color: #0f766e; font-weight: 600; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -121,11 +120,11 @@
 <body>
 
   <div id="splash">
+    <div class="creator">Created by Kai Luu for Ngoc Huynh</div>
     <div class="logo">🛒</div>
     <h1>Welcome to your<br>Smart Shopping AI</h1>
     <p>Smart shopping budget assistant</p>
     <button id="splash-btn">Get Started</button>
-    <div class="creator">Created by Kai Luu for Ngoc Huynh</div>
   </div>
 
   <div id="update-banner">🔄 New update available — Tap to reload</div>
