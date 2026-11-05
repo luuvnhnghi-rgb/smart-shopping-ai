@@ -85,7 +85,7 @@
     .category-btn:active { background: #e5e7eb; }
     .category-btn.selected { background: #ccfbf1; border-color: #14b8a6; color: #0f766e; }
 
-    /* ===== POPUP MODAL CHI TIẾT ===== */
+    /* ===== POPUP MODAL ===== */
     .modal-overlay {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000;
       justify-content: center; align-items: center; padding: 20px;
@@ -102,7 +102,7 @@
       padding: 12px; background: #f0fdfa; border: 2px solid #ccfbf1; border-radius: 12px;
       font-weight: 600; color: #0f766e; cursor: pointer; font-size: 0.95rem;
     }
-    .modal-grid button:active { background: #99f6e4; }
+    .modal-grid button:active, .modal-grid button.selected-opt { background: #99f6e4; border-color: #14b8a6; }
     .modal-qty-label { font-size: 0.9rem; color: #4b5563; margin-bottom: 6px; font-weight: 600; display: block; }
     .modal-qty-input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 12px; margin-bottom: 16px; font-size: 1rem; outline: none;}
     .modal-qty-input:focus { border-color: #14b8a6; }
@@ -176,7 +176,6 @@
     <div class="section-title">➕ Add Product</div>
     
     <div class="form-card">
-      <!-- CHỌN SIÊU THỊ -->
       <div class="form-group">
         <label>Select Store</label>
         <select id="store-select">
@@ -189,7 +188,6 @@
         </select>
       </div>
 
-      <!-- CHỌN DANH MỤC -->
       <div class="form-group">
         <label>Select Category</label>
         <div class="category-grid" id="category-grid">
@@ -239,26 +237,16 @@
     <p style="padding: 0 16px; font-size: 0.85rem; color: #6b7280; margin-bottom: 12px;">
       The table below shows the <strong>average price</strong> of each category per store (based on history). Green boxes indicate the cheapest store.
     </p>
-    <div class="stats-card" id="stats-container">
-      <!-- Stats will be generated here -->
-    </div>
+    <div class="stats-card" id="stats-container"></div>
   </div>
 
   <!-- POPUP MODAL CHO THỊT -->
   <div class="modal-overlay" id="meat-modal">
     <div class="modal-content">
       <div class="modal-title" id="modal-title">Select Detail</div>
-      
-      <!-- Các nút chọn chi tiết -->
-      <div class="modal-grid" id="modal-options">
-        <!-- Nội dung sẽ được thay đổi bằng JS -->
-      </div>
-
-      <!-- Nhập số lượng optional -->
+      <div class="modal-grid" id="modal-options"></div>
       <label class="modal-qty-label">Số lượng (Optional)</label>
       <input type="number" id="modal-qty" class="modal-qty-input" min="1" placeholder="Mặc định là 1">
-
-      <!-- Nút Hủy / Đồng ý -->
       <div class="modal-btns">
         <button class="modal-cancel" id="modal-cancel-btn">Cancel</button>
         <button class="modal-confirm" id="modal-confirm-btn">Confirm</button>
@@ -280,7 +268,6 @@
     let budget = parseFloat(localStorage.getItem('budget')) || 50;
     let history = JSON.parse(localStorage.getItem('history') || '[]');
 
-    // Biến dùng cho popup
     let currentCategory = '';
     let selectedDetail = '';
     
@@ -345,7 +332,6 @@
     const pNameInput = document.getElementById('p-name');
     const pQtyInput = document.getElementById('p-qty');
     
-    // DOM cho Modal
     const meatModal = document.getElementById('meat-modal');
     const modalTitle = document.getElementById('modal-title');
     const modalOptions = document.getElementById('modal-options');
@@ -366,36 +352,31 @@
         const btn = document.createElement('button');
         btn.textContent = opt;
         btn.addEventListener('click', () => {
-          // Bỏ highlight các nút khác
-          modalOptions.querySelectorAll('button').forEach(b => b.style.borderColor = '#ccfbf1');
-          btn.style.borderColor = '#14b8a6'; // Highlight nút được chọn
+          modalOptions.querySelectorAll('button').forEach(b => b.classList.remove('selected-opt'));
+          btn.classList.add('selected-opt');
           selectedDetail = opt;
         });
         modalOptions.appendChild(btn);
       });
 
-      modalQty.value = ''; // Reset ô số lượng
+      modalQty.value = ''; 
       meatModal.classList.add('show');
     }
 
-    // Nút Cancel trong popup
     document.getElementById('modal-cancel-btn').addEventListener('click', () => {
       meatModal.classList.remove('show');
       catBtns.forEach(b => b.classList.remove('selected'));
       currentCategory = '';
     });
 
-    // Nút Confirm trong popup
     document.getElementById('modal-confirm-btn').addEventListener('click', () => {
       if (!selectedDetail) {
         alert('Please select a detail option.');
         return;
       }
 
-      // Cập nhật form
       pNameInput.value = `${currentCategory}: ${selectedDetail}`;
       
-      // Nếu có nhập số lượng optional, điền vào form chính
       const qtyVal = parseInt(modalQty.value);
       if (qtyVal > 0) {
         pQtyInput.value = qtyVal;
@@ -404,7 +385,7 @@
       }
 
       meatModal.classList.remove('show');
-      pNameInput.focus(); // Đưa con trỏ xuống ô giá để nhập
+      pNameInput.focus(); 
     });
 
     catBtns.forEach(btn => {
@@ -416,13 +397,11 @@
         const cat = btn.dataset.cat;
         currentCategory = cat; 
 
-        // Nếu là thịt, mở popup
         if (['Beef', 'Pork', 'Chicken'].includes(cat)) {
           showMeatModal(cat);
           return;
         }
 
-        // Các danh mục khác xử lý như cũ
         if (cat === 'Spices') {
           const spiceName = prompt("Please enter the spice name:");
           if (spiceName && spiceName.trim() !== '') {
@@ -555,7 +534,7 @@
       document.querySelector('.tab-btn[data-tab="history"]').click();
     });
 
-    // ===== RENDER HISTORY & DELETE FEATURE =====
+    // ===== RENDER HISTORY =====
     function renderHistory() {
       const list = document.getElementById('history-list');
       const empty = document.getElementById('empty-history');
@@ -586,4 +565,58 @@
           btn.addEventListener('click', () => {
             const idx = parseInt(btn.dataset.index);
             if (confirm("Are you sure you want to delete this purchase history? This cannot be undone.")) {
-              history.splice(idx,
+              history.splice(idx, 1);
+              localStorage.setItem('history', JSON.stringify(history));
+              renderHistory();
+              if(document.getElementById('tab-stats').classList.contains('active')){
+                renderStats();
+              }
+            }
+          });
+        });
+      }
+    }
+
+    // ===== RENDER STATS =====
+    function renderStats() {
+      const container = document.getElementById('stats-container');
+      
+      let allPurchases = [];
+      history.forEach(trip => {
+        if (trip.rawData) {
+          allPurchases.push(...trip.rawData);
+        }
+      });
+
+      if (allPurchases.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 20px; color:#9ca3af;">No data available. Go shopping and "Save Trip" first.</div>';
+        return;
+      }
+
+      const categoryData = {};
+      
+      allPurchases.forEach(item => {
+        const cat = item.category || 'Other';
+        const store = item.store || 'Other';
+        const price = item.unitPrice;
+
+        if (!categoryData[cat]) categoryData[cat] = {};
+        if (!categoryData[cat][store]) categoryData[cat][store] = [];
+        
+        categoryData[cat][store].push(price);
+      });
+
+      const allStores = [...new Set(allPurchases.map(i => i.store || 'Other'))].sort();
+
+      let html = '<table class="stats-table"><thead><tr><th>Category</th>';
+      allStores.forEach(store => {
+        html += `<th>${store}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      for (const cat in categoryData) {
+        html += `<tr><td style="font-weight:700;">${cat}</td>`;
+        
+        let minAveragePrice = Infinity;
+        const storeAverages = {};
+       
