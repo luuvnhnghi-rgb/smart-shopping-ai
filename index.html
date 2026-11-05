@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Smart Shopping AI</title>
+  <title>Min Buy</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0f766e">
-  <link rel="apple-touch-icon" href="/logo.png"> <!-- Cần thiết cho iPhone -->
+  <link rel="apple-touch-icon" href="/logo.png">
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
@@ -16,16 +16,14 @@
     #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f766e, #14b8a6); color: #fff; text-align: center; padding: 2rem; transition: opacity 0.5s ease, visibility 0.5s ease; }
     #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     
-    /* LOGO TRONG SPLASH */
     #splash .logo { width: 120px; height: 120px; background: transparent; border-radius: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
     #splash .logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     
-    #splash h1 { font-size: 1.7rem; margin-bottom: 0.5rem; line-height: 1.3; }
+    #splash h1 { font-size: 2.2rem; margin-bottom: 0.5rem; line-height: 1.3; font-weight: 800; }
     #splash p { font-size: 1rem; opacity: 0.85; margin-bottom: 2rem; }
     #splash button { background: #fff; color: #0f766e; border: none; padding: 14px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
     #splash .creator { position: absolute; top: 60px; font-size: 0.9rem; opacity: 0.8; letter-spacing: 1px; font-weight: 400; }
 
-    /* CÁC PHẦN CSS KHÁC GIỮ NGUYÊN */
     #update-banner { display: none; background: #fbbf24; color: #78350f; padding: 12px; text-align: center; font-weight: 600; cursor: pointer; position: sticky; top: 0; z-index: 100; }
     #update-banner.show { display: block; }
     #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 3000; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; }
@@ -101,11 +99,10 @@
 </head>
 <body>
 
-  <!-- SPLASH ĐÃ ĐƯỢC CẬP NHẬT LOGO -->
   <div id="splash">
     <div class="creator">Created by Kai Luu for Ngoc Huynh</div>
     <div class="logo"><img src="/logo.png" alt="Logo"></div>
-    <h1>Welcome to your<br>Smart Shopping AI</h1>
+    <h1>Welcome to Min Buy</h1>
     <p>Smart shopping budget assistant</p>
     <button id="splash-btn">Get Started</button>
   </div>
@@ -458,10 +455,10 @@
       }).catch(() => {});
     }
 
-    // CẬP NHẬT ICON LẤY TỪ FILE ẢNH LOGO.PNG
+    // CẬP NHẬT TÊN APP TRÊN MÀN HÌNH CHÍNH
     const manifestData = {
-      name: "Smart Shopping AI", 
-      short_name: "SmartShop", 
+      name: "Min Buy", 
+      short_name: "Min Buy", 
       start_url: "/", 
       display: "standalone",
       background_color: "#0f766e", 
