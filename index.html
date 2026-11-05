@@ -6,7 +6,7 @@
   <title>Min Buy</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0f766e">
-  <link rel="apple-touch-icon" href="/logo.png">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzBmNzY2ZSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yNSwgNSkgc2NhbGUoMC43NSkiPjxwYXRoIGQ9Ik04MCA4MGg1MGw1MCAyNDBoMjQwbDQwLTE2MEgxNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI0MCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMjQwIiBjeT0iMzgwIiByPSI0MCIgZmlsbD0iI2ZmZmZmZiIvPjxjaXJjbGUgY3g9IjQwMCIgY3k9IjM4MCIgcj0iNDAiIGZpbGw9IiNmZmZmZmYiLz48L2c+PC9zdmc+">
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
@@ -16,6 +16,7 @@
     #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f766e, #14b8a6); color: #fff; text-align: center; padding: 2rem; transition: opacity 0.5s ease, visibility 0.5s ease; }
     #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     
+    /* LOGO ĐÃ ĐƯỢC NHÚNG BASE64 (HIỆN NGAY LẬP TỨC) */
     #splash .logo { width: 240px; height: 240px; background: transparent; border-radius: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
     #splash .logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     
@@ -99,10 +100,10 @@
 </head>
 <body>
 
-  <!-- SPLASH SCREEN -->
+  <!-- SPLASH SCREEN (Logo lấy từ Base64 nên hiện ngay lập tức) -->
   <div id="splash">
     <div class="creator">Created by Kai Luu for Ngoc Huynh</div>
-    <div class="logo"><img src="/logo.png" alt="Logo"></div>
+    <div class="logo"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzBmNzY2ZSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yNSwgNSkgc2NhbGUoMC43NSkiPjxwYXRoIGQ9Ik04MCA4MGg1MGw1MCAyNDBoMjQwbDQwLTE2MEgxNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI0MCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMjQwIiBjeT0iMzgwIiByPSI0MCIgZmlsbD0iI2ZmZmZmZiIvPjxjaXJjbGUgY3g9IjQwMCIgY3k9IjM4MCIgcj0iNDAiIGZpbGw9IiNmZmZmZmYiLz48L2c+PC9zdmc+" alt="Logo"></div>
     <h1>Welcome to<br>Min Buy</h1>
     <p>Smart shopping budget assistant</p>
     <button id="splash-btn">Get Started</button>
@@ -176,28 +177,23 @@
     <div class="stats-card" id="stats-container"></div>
   </div>
 
-  <!-- MODAL POPUP -->
+  <!-- MODAL -->
   <div class="modal-overlay" id="custom-modal">
     <div class="modal-content">
       <div class="modal-title" id="modal-title">Select Detail</div>
-      
       <div class="modal-grid" id="modal-options" style="display: none;"></div>
-      
       <div class="modal-input-group" id="modal-name-group" style="display: none;">
         <label id="modal-name-label">Name</label>
         <input type="text" id="modal-name-input" placeholder="Enter name...">
       </div>
-
       <div class="modal-input-group">
         <label>Unit Price (€)</label>
         <input type="text" id="modal-price" inputmode="decimal" placeholder="e.g. 2,49">
       </div>
-
       <div class="modal-input-group">
         <label>Quantity</label>
         <input type="number" id="modal-qty" min="1" placeholder="Default is 1">
       </div>
-
       <div class="modal-btns">
         <button class="modal-cancel" id="modal-cancel-btn">Cancel</button>
         <button class="modal-confirm" id="modal-confirm-btn">Confirm</button>
@@ -222,7 +218,7 @@
     const parsePrice = (str) => parseFloat(str.replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
     const formatPrice = (num) => num.toFixed(2).replace('.', ',') + ' €';
 
-    // SPLASH SCREEN 3.5s
+    // SPLASH SCREEN
     const splash = document.getElementById('splash');
     document.getElementById('splash-btn').onclick = () => splash.classList.add('hidden');
     setTimeout(() => splash.classList.add('hidden'), 3500);
@@ -457,7 +453,7 @@
       }).catch(() => {});
     }
 
-    // MANIFEST
+    // MANIFEST (Cập nhật icon ngoài màn hình chính)
     const manifestData = {
       name: "Min Buy", 
       short_name: "Min Buy", 
@@ -465,7 +461,7 @@
       display: "standalone",
       background_color: "#0f766e", 
       theme_color: "#0f766e",
-      icons: [{ src: "/logo.png", sizes: "512x512", type: "image/png" }]
+      icons: [{ src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzBmNzY2ZSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yNSwgNSkgc2NhbGUoMC43NSkiPjxwYXRoIGQ9Ik04MCA4MGg1MGw1MCAyNDBoMjQwbDQwLTE2MEgxNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI0MCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMjQwIiBjeT0iMzgwIiByPSI0MCIgZmlsbD0iI2ZmZmZmZiIvPjxjaXJjbGUgY3g9IjQwMCIgY3k9IjM4MCIgcj0iNDAiIGZpbGw9IiNmZmZmZmYiLz48L2c+PC9zdmc+", sizes: "512x512", type: "image/svg+xml" }]
     };
     
     document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(new Blob([JSON.stringify(manifestData)], {type: 'application/json'}));
