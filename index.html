@@ -32,17 +32,13 @@
 
     /* ===== BUDGET CARD ===== */
     .budget-card { background: #fff; margin: 16px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-    
     .remaining-block { text-align: center; margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; }
     .remaining-label { font-size: 0.85rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
     .edit-budget-btn { background: #e0f2fe; color: #0284c7; border: none; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
-    .edit-budget-btn:active { background: #bae6fd; }
     .remaining-amount { font-size: 2.8rem; font-weight: 800; color: #0f766e; display: block; line-height: 1.2; margin-top: 4px; }
     .remaining-amount.negative { color: #dc2626; }
-    
     .spent-block { text-align: center; margin-bottom: 16px; }
     .spent-label { font-size: 0.85rem; color: #9ca3af; }
-    
     .budget-bar { height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
     .budget-fill { height: 100%; background: #14b8a6; border-radius: 5px; transition: width 0.3s, background 0.3s; }
     .budget-fill.over { background: #dc2626; }
@@ -60,10 +56,7 @@
     .cart-item .del-btn { background: none; border: none; font-size: 1.2rem; color: #ef4444; cursor: pointer; padding: 4px 8px; }
     .empty-cart { text-align: center; padding: 40px 20px; color: #9ca3af; }
     .empty-cart .icon { font-size: 3rem; margin-bottom: 12px; }
-
     .btn-save-trip { background: #f59e0b; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    .btn-save-trip:active { background: #d97706; }
-    
     .history-item { background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
     .history-header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 8px; color: #374151; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;}
     .history-detail { font-size: 0.85rem; color: #6b7280; white-space: pre-wrap; }
@@ -75,7 +68,6 @@
     .form-group input { width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; outline: none; transition: border-color 0.2s; }
     .form-group input:focus { border-color: #14b8a6; }
     .btn-primary { width: 100%; padding: 16px; background: #0f766e; color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 8px; }
-    .btn-primary:active { background: #115e59; }
 
     /* ===== NÚT CHỤP HÌNH ===== */
     .camera-btn { width: 100%; padding: 16px; background: #3b82f6; color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -150,7 +142,7 @@
         <input type="text" id="p-name" placeholder="VD: Sữa tươi 1L">
       </div>
       <div class="form-group">
-        <label>Đơn giá (€) — nhập dấu phẩy được</label>
+        <label>Đơn giá (€)</label>
         <input type="text" id="p-price" inputmode="decimal" placeholder="VD: 2,49">
       </div>
       <div class="form-group">
@@ -202,14 +194,13 @@
 
     // ===== SỬA NGÂN SÁCH =====
     document.getElementById('edit-budget-btn').addEventListener('click', () => {
-      // Dùng prompt để hiện bảng nhập liệu đơn giản
-      const newBudget = prompt("Nhập giới hạn chi tiêu cho chuyến đi này (€):", budget.toFixed(2).replace('.', ','));
+      const newBudget = prompt("Nhập giới hạn chi tiêu (€):", budget.toFixed(2).replace('.', ','));
       if (newBudget !== null && newBudget.trim() !== '') {
         const val = parsePrice(newBudget);
         if (val > 0) {
           budget = val;
           localStorage.setItem('budget', budget);
-          updateBudget(); // Cập nhật lại giao diện
+          updateBudget();
         } else {
           alert('Số tiền không hợp lệ!');
         }
@@ -219,7 +210,6 @@
     // ===== FORMAT & PARSE GIÁ =====
     function parsePrice(str) {
       if (!str) return 0;
-      // Thay dấu phẩy bằng dấu chấm, bỏ các ký tự lạ
       const normalized = str.replace(',', '.').replace(/[^0-9.]/g, '');
       return parseFloat(normalized) || 0;
     }
@@ -259,25 +249,32 @@
       cameraBtn.disabled = true;
 
       try {
-        // Tiền xử lý ảnh
         const optimizedImage = await preprocessImage(file);
 
-        ocrStatus.textContent = 'Đang đọc chữ...';
+        ocrStatus.textContent = 'Đang quét chữ...';
         const result = await Tesseract.recognize(optimizedImage, 'deu', {
-          logger: m => { if(m.status === 'recognizing text') ocrStatus.textContent = 'Đang đọc chữ: ' + Math.round(m.progress * 100) + '%'; }
+          logger: m => { if(m.status === 'recognizing text') ocrStatus.textContent = 'Đang quét: ' + Math.round(m.progress * 100) + '%'; }
         });
         
         const text = result.data.text;
-        const extracted = extractProduct(text);
+        const blocks = result.data.blocks;
+        
+        const extracted = extractProduct(text, blocks);
 
         if (extracted.productName) document.getElementById('p-name').value = extracted.productName;
         
         if (extracted.salePrice > 0) {
-          priceInput.value = extracted.salePrice.toFixed(2).replace('.', ',');
-          ocrStatus.textContent = '✅ Đã tự động điền giá!';
-          ocrStatus.style.color = '#16a34a';
+          const confirmPrice = confirm(`🤖 Máy đọc được giá to nhất là: ${extracted.salePrice} €\n\nBạn có muốn điền giá này không?\n(Bấm Cancel nếu máy đọc sai, bạn sẽ tự nhập tay)`);
+          if (confirmPrice) {
+            priceInput.value = extracted.salePrice.toFixed(2).replace('.', ',');
+            ocrStatus.textContent = '✅ Đã điền xong!';
+            ocrStatus.style.color = '#16a34a';
+          } else {
+            ocrStatus.textContent = '⚠️ Bạn đã bỏ qua giá máy đọc.';
+            ocrStatus.style.color = '#d97706';
+          }
         } else {
-          ocrStatus.textContent = '⚠️ Đã điền tên, nhưng không tìm thấy giá. Vui lòng nhập tay.';
+          ocrStatus.textContent = '⚠️ Không tìm thấy giá. Vui lòng nhập tay.';
           ocrStatus.style.color = '#d97706';
         }
         
@@ -300,8 +297,7 @@
           const ctx = canvas.getContext('2d');
           canvas.width = img.width * 1.5;
           canvas.height = img.height * 1.5;
-          // Tăng độ tương phản và chuyển xám để máy đọc số rõ hơn
-          ctx.filter = 'grayscale(1) contrast(1.6) brightness(1.1)';
+          ctx.filter = 'grayscale(1) contrast(1.5) brightness(1.1)';
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
           resolve(canvas.toDataURL('image/jpeg', 0.9));
         };
@@ -310,40 +306,44 @@
     }
 
     // ===== THUẬT TOÁN TRÍCH XUẤT GIÁ VÀ TÊN =====
-    function extractProduct(ocrText) {
+    function extractProduct(ocrText, blocks) {
       const lines = ocrText.split('\n').map(l => l.trim()).filter(Boolean);
       let salePrice = 0;
 
-      // 1. Tìm giá: Ưu tiên các số có định dạng x,xx (VD: 14,95 hoặc 9,95)
+      // 1. Tìm tất cả các cụm số có dấu phẩy (VD: 14,95)
       const priceRegex = /(\d+)[.,](\d{2})/g;
       let match;
       let candidates = [];
 
       while ((match = priceRegex.exec(ocrText)) !== null) {
         const fullPrice = parseFloat(match[1] + '.' + match[2]);
-        
-        // Giá siêu thị thường từ 0.5 đến 100
         if (fullPrice > 0.5 && fullPrice < 100) {
             const index = match.index;
-            // Xem ngữ cảnh xung quanh con số (có ký hiệu € không)
             const context = ocrText.substring(Math.max(0, index - 10), Math.min(ocrText.length, index + 15));
-            
             let score = 1;
-            if (context.includes('€')) score += 10; // Rất có thể là giá
-            if (index > ocrText.length / 2) score += 5; // Nằm ở nửa dưới ảnh
-            
+            if (context.includes('€')) score += 10;
+            if (index > ocrText.length / 2) score += 5; // Ưu tiên nửa dưới ảnh
             candidates.push({ price: fullPrice, score });
         }
       }
 
-      // Lọc ra con số có điểm cao nhất
       if (candidates.length > 0) {
         candidates.sort((a, b) => b.score - a.score);
         salePrice = candidates[0].price;
+      } else {
+        // Thử tìm con số đứng riêng lẻ không có dấu phẩy (phòng trường hợp máy đọc thành 1495)
+        const numRegex = /(?:^|\s)(\d{1,3})(?:\s*€)/g;
+        let numMatch;
+        let numCandidates = [];
+        while ((numMatch = numRegex.exec(ocrText)) !== null) {
+            let val = parseFloat(numMatch[1]);
+            if(val > 0.5 && val < 100) numCandidates.push(val);
+        }
+        if(numCandidates.length > 0) salePrice = numCandidates[0];
       }
 
       // 2. Tìm tên sản phẩm
-      const unitWords = /^(€|EUR|kg|g|ml|l|stk|stück|angebot|aktion|rabatt|statt|uvp|prozent)/i;
+      const unitWords = /^(€|EUR|kg|g|ml|l|stk|stück|angebot|aktion|rabatt|statt|uvp|prozent|nacht|neu)/i;
       const nameCandidates = lines.filter(l =>
         /[A-Za-zÄÖÜäöüß]{3,}/.test(l) && 
         !unitWords.test(l) && 
@@ -352,10 +352,9 @@
         l.length > 3
       );
       
-      // Sắp xếp dòng dài nhất làm tên
       const productName = nameCandidates.sort((a, b) => b.length - a.length)[0] || '';
 
-      // 3. Khối lượng (nếu có)
+      // 3. Khối lượng
       const weightMatch = ocrText.match(/(\d+(?:[.,]\d+)?)\s*(kg|g|ml|l|stk|x)/i);
       const weight = weightMatch ? `${weightMatch[1]} ${weightMatch[2]}` : '';
 
@@ -455,19 +454,11 @@
       
       const total = cart.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
       const date = new Date().toLocaleString('vi-VN');
-      
       let details = cart.map(i => `- ${i.name}: ${i.quantity} x ${formatPrice(i.unitPrice)}`).join('\n');
       
-      history.unshift({
-        date: date,
-        total: total,
-        items: cart.length,
-        details: details
-      });
-      
+      history.unshift({ date: date, total: total, items: cart.length, details: details });
       localStorage.setItem('history', JSON.stringify(history));
       
-      // Reset giỏ hàng
       cart = [];
       saveCart();
       renderCart();
@@ -529,7 +520,6 @@
       background_color: "#0f766e", theme_color: "#0f766e",
       icons: [{ src: "data:image/svg+xml;base64," + btoa(iconSvg), sizes: "512x512", type: "image/svg+xml" }]
     };
-    
     const blob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
     document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(blob);
 
