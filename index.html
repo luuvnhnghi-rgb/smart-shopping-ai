@@ -85,6 +85,33 @@
     .category-btn:active { background: #e5e7eb; }
     .category-btn.selected { background: #ccfbf1; border-color: #14b8a6; color: #0f766e; }
 
+    /* ===== POPUP MODAL CHI TIẾT ===== */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000;
+      justify-content: center; align-items: center; padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-content {
+      background: #fff; width: 100%; max-width: 350px; border-radius: 20px; padding: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: popIn 0.2s ease-out;
+    }
+    @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-title { font-size: 1.1rem; font-weight: 700; color: #0f766e; margin-bottom: 16px; text-align: center; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .modal-grid button {
+      padding: 12px; background: #f0fdfa; border: 2px solid #ccfbf1; border-radius: 12px;
+      font-weight: 600; color: #0f766e; cursor: pointer; font-size: 0.95rem;
+    }
+    .modal-grid button:active { background: #99f6e4; }
+    .modal-qty-label { font-size: 0.9rem; color: #4b5563; margin-bottom: 6px; font-weight: 600; display: block; }
+    .modal-qty-input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 12px; margin-bottom: 16px; font-size: 1rem; outline: none;}
+    .modal-qty-input:focus { border-color: #14b8a6; }
+    .modal-btns { display: flex; gap: 10px; }
+    .modal-btns button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; }
+    .modal-cancel { background: #f3f4f6; color: #4b5563; }
+    .modal-confirm { background: #0f766e; color: #fff; }
+    .modal-confirm:active { background: #115e59; }
+
     /* ===== THỐNG KÊ ===== */
     .stats-card { background: #fff; margin: 16px; padding: 16px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow-x: auto; }
     .stats-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 400px; }
@@ -166,7 +193,10 @@
       <div class="form-group">
         <label>Select Category</label>
         <div class="category-grid" id="category-grid">
-          <button class="category-btn" data-cat="Meat">🥩 Meat</button>
+          <button class="category-btn" data-cat="Beef">🥩 Beef</button>
+          <button class="category-btn" data-cat="Chicken">🍗 Chicken</button>
+          <button class="category-btn" data-cat="Pork">🥓 Pork</button>
+          <button class="category-btn" data-cat="Fish">🐟 Fish</button>
           <button class="category-btn" data-cat="Eggs">🥚 Eggs</button>
           <button class="category-btn" data-cat="Vegetables">🥬 Vegetables</button>
           <button class="category-btn" data-cat="Soft Drinks">🥤 Soft Drinks</button>
@@ -214,6 +244,28 @@
     </div>
   </div>
 
+  <!-- POPUP MODAL CHO THỊT -->
+  <div class="modal-overlay" id="meat-modal">
+    <div class="modal-content">
+      <div class="modal-title" id="modal-title">Select Detail</div>
+      
+      <!-- Các nút chọn chi tiết -->
+      <div class="modal-grid" id="modal-options">
+        <!-- Nội dung sẽ được thay đổi bằng JS -->
+      </div>
+
+      <!-- Nhập số lượng optional -->
+      <label class="modal-qty-label">Số lượng (Optional)</label>
+      <input type="number" id="modal-qty" class="modal-qty-input" min="1" placeholder="Mặc định là 1">
+
+      <!-- Nút Hủy / Đồng ý -->
+      <div class="modal-btns">
+        <button class="modal-cancel" id="modal-cancel-btn">Cancel</button>
+        <button class="modal-confirm" id="modal-confirm-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TAB BAR -->
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="cart"><span class="icon">🧺</span>Cart</button>
@@ -228,6 +280,10 @@
     let budget = parseFloat(localStorage.getItem('budget')) || 50;
     let history = JSON.parse(localStorage.getItem('history') || '[]');
 
+    // Biến dùng cho popup
+    let currentCategory = '';
+    let selectedDetail = '';
+    
     // ===== SPLASH =====
     const splash = document.getElementById('splash');
     document.getElementById('splash-btn').addEventListener('click', () => splash.classList.add('hidden'));
@@ -284,10 +340,72 @@
       e.target.value = v;
     });
 
-    // ===== CATEGORY SELECTION =====
+    // ===== XỬ LÝ CHỌN DANH MỤC & POPUP =====
     const catBtns = document.querySelectorAll('.category-btn');
     const pNameInput = document.getElementById('p-name');
-    let currentCategory = '';
+    const pQtyInput = document.getElementById('p-qty');
+    
+    // DOM cho Modal
+    const meatModal = document.getElementById('meat-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalOptions = document.getElementById('modal-options');
+    const modalQty = document.getElementById('modal-qty');
+
+    const meatOptions = {
+      'Beef': ['Thịt bằm', 'Thịt mảng steak'],
+      'Pork': ['Thịt bằm', 'Thịt mảng steak'],
+      'Chicken': ['Cánh gà', 'Đùi gà', 'Ức gà']
+    };
+
+    function showMeatModal(cat) {
+      modalTitle.textContent = `Select ${cat} Detail`;
+      modalOptions.innerHTML = '';
+      selectedDetail = '';
+      
+      meatOptions[cat].forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.addEventListener('click', () => {
+          // Bỏ highlight các nút khác
+          modalOptions.querySelectorAll('button').forEach(b => b.style.borderColor = '#ccfbf1');
+          btn.style.borderColor = '#14b8a6'; // Highlight nút được chọn
+          selectedDetail = opt;
+        });
+        modalOptions.appendChild(btn);
+      });
+
+      modalQty.value = ''; // Reset ô số lượng
+      meatModal.classList.add('show');
+    }
+
+    // Nút Cancel trong popup
+    document.getElementById('modal-cancel-btn').addEventListener('click', () => {
+      meatModal.classList.remove('show');
+      catBtns.forEach(b => b.classList.remove('selected'));
+      currentCategory = '';
+    });
+
+    // Nút Confirm trong popup
+    document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+      if (!selectedDetail) {
+        alert('Please select a detail option.');
+        return;
+      }
+
+      // Cập nhật form
+      pNameInput.value = `${currentCategory}: ${selectedDetail}`;
+      
+      // Nếu có nhập số lượng optional, điền vào form chính
+      const qtyVal = parseInt(modalQty.value);
+      if (qtyVal > 0) {
+        pQtyInput.value = qtyVal;
+      } else {
+        pQtyInput.value = 1;
+      }
+
+      meatModal.classList.remove('show');
+      pNameInput.focus(); // Đưa con trỏ xuống ô giá để nhập
+    });
 
     catBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -298,6 +416,13 @@
         const cat = btn.dataset.cat;
         currentCategory = cat; 
 
+        // Nếu là thịt, mở popup
+        if (['Beef', 'Pork', 'Chicken'].includes(cat)) {
+          showMeatModal(cat);
+          return;
+        }
+
+        // Các danh mục khác xử lý như cũ
         if (cat === 'Spices') {
           const spiceName = prompt("Please enter the spice name:");
           if (spiceName && spiceName.trim() !== '') {
@@ -457,122 +582,8 @@
           list.appendChild(div);
         });
 
-        // Bắt sự kiện xóa lịch sử
         list.querySelectorAll('.history-del-btn').forEach(btn => {
           btn.addEventListener('click', () => {
             const idx = parseInt(btn.dataset.index);
             if (confirm("Are you sure you want to delete this purchase history? This cannot be undone.")) {
-              history.splice(idx, 1);
-              localStorage.setItem('history', JSON.stringify(history));
-              renderHistory();
-              // Cập nhật lại bảng thống kê nếu đang mở
-              if(document.getElementById('tab-stats').classList.contains('active')){
-                renderStats();
-              }
-            }
-          });
-        });
-      }
-    }
-
-    // ===== RENDER STATS =====
-    function renderStats() {
-      const container = document.getElementById('stats-container');
-      
-      let allPurchases = [];
-      history.forEach(trip => {
-        if (trip.rawData) {
-          allPurchases.push(...trip.rawData);
-        }
-      });
-
-      if (allPurchases.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding: 20px; color:#9ca3af;">No data available. Go shopping and "Save Trip" first.</div>';
-        return;
-      }
-
-      const categoryData = {};
-      
-      allPurchases.forEach(item => {
-        const cat = item.category || 'Other';
-        const store = item.store || 'Other';
-        const price = item.unitPrice;
-
-        if (!categoryData[cat]) categoryData[cat] = {};
-        if (!categoryData[cat][store]) categoryData[cat][store] = [];
-        
-        categoryData[cat][store].push(price);
-      });
-
-      const allStores = [...new Set(allPurchases.map(i => i.store || 'Other'))].sort();
-
-      let html = '<table class="stats-table"><thead><tr><th>Category</th>';
-      allStores.forEach(store => {
-        html += `<th>${store}</th>`;
-      });
-      html += '</tr></thead><tbody>';
-
-      for (const cat in categoryData) {
-        html += `<tr><td style="font-weight:700;">${cat}</td>`;
-        
-        let minAveragePrice = Infinity;
-        const storeAverages = {};
-        for (const store in categoryData[cat]) {
-            const prices = categoryData[cat][store];
-            const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
-            storeAverages[store] = avg;
-            if (avg < minAveragePrice) minAveragePrice = avg;
-        }
-
-        allStores.forEach(store => {
-          if (storeAverages[store] !== undefined) {
-            const isBest = Math.abs(storeAverages[store] - minAveragePrice) < 0.001; 
-            html += `<td class="${isBest ? 'best-price' : ''}">${formatPrice(storeAverages[store])}</td>`;
-          } else {
-            html += `<td class="no-data">-</td>`;
-          }
-        });
-
-        html += '</tr>';
-      }
-
-      html += '</tbody></table>';
-      container.innerHTML = html;
-    }
-
-    // ===== SERVICE WORKER =====
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js').then(reg => {
-        reg.update();
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              const banner = document.getElementById('update-banner');
-              banner.classList.add('show');
-              banner.onclick = () => {
-                newWorker.postMessage({ type: 'SKIP_WAITING' });
-                window.location.reload();
-              };
-            }
-          });
-        });
-      }).catch(() => {});
-    }
-
-    // ===== CẬP NHẬT ICON APP =====
-    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#0f766e"/><path d="M160 160h192l-16 160H176z" fill="none" stroke="#ffffff" stroke-width="32" stroke-linejoin="round"/><path d="M144 112h32l24 48" fill="none" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/><circle cx="208" cy="368" r="24" fill="#ffffff"/><circle cx="336" cy="368" r="24" fill="#ffffff"/></svg>`;
-    const manifestData = {
-      name: "Smart Shopping AI", short_name: "SmartShop", start_url: "/", display: "standalone",
-      background_color: "#0f766e", theme_color: "#0f766e",
-      icons: [{ src: "data:image/svg+xml;base64," + btoa(iconSvg), sizes: "512x512", type: "image/svg+xml" }]
-    };
-    const blob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
-    document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(blob);
-
-    // ===== INIT =====
-    renderCart();
-    renderHistory();
-  </script>
-</body>
-</html>
+              history.splice(idx,
