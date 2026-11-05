@@ -2,13 +2,23 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Smart Shopping AI</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0f766e">
+  <!-- Thư viện đọc chữ từ ảnh (OCR) -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background: #f0fdfa; min-height: 100vh; padding-bottom: 80px; }
+    
+    /* ĐẨY TOÀN BỘ APP XUỐNG ĐỂ TRÁNH LOGO NETLIFY */
+    body { 
+      background: #f0fdfa; 
+      min-height: 100vh; 
+      padding-top: 60px; /* Khoảng trống trên cùng */
+      padding-bottom: 100px; /* Khoảng trống dưới cùng tránh thanh vuốt iPhone */
+    }
 
     /* ===== SPLASH SCREEN ===== */
     #splash {
@@ -27,34 +37,24 @@
       border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer;
     }
 
-    /* ===== HEADER ===== */
-    header { background: #0f766e; color: white; padding: 16px; text-align: center; }
-    header h1 { font-size: 1.3rem; }
-
     /* ===== UPDATE BANNER ===== */
     #update-banner {
       display: none; background: #fbbf24; color: #78350f; padding: 12px 16px;
-      text-align: center; font-weight: 600; cursor: pointer;
+      text-align: center; font-weight: 600; cursor: pointer; position: sticky; top: 0; z-index: 100;
     }
     #update-banner.show { display: block; }
 
-    /* ===== BUDGET CARD (ĐÃ ĐỔI VỊ TRÍ) ===== */
+    /* ===== BUDGET CARD ===== */
     .budget-card { background: #fff; margin: 16px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-
-    /* CÒN LẠI TO, NỔI BẬT */
     .remaining-block { text-align: center; margin-bottom: 8px; }
     .remaining-label { font-size: 0.85rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
     .remaining-amount { font-size: 2.8rem; font-weight: 800; color: #0f766e; display: block; line-height: 1.2; }
     .remaining-amount.negative { color: #dc2626; }
-
-    /* TỔNG ĐÃ MUA NHỎ */
     .spent-block { text-align: center; margin-bottom: 16px; }
     .spent-label { font-size: 0.85rem; color: #9ca3af; }
-
     .budget-bar { height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
     .budget-fill { height: 100%; background: #14b8a6; border-radius: 5px; transition: width 0.3s, background 0.3s; }
     .budget-fill.over { background: #dc2626; }
-
     .warn-msg { display: none; font-size: 0.85rem; color: #dc2626; text-align: center; margin-top: 8px; }
     .warn-msg.show { display: block; }
 
@@ -63,19 +63,17 @@
     .cart-list { margin: 0 16px; }
     .cart-item {
       background: #fff; padding: 14px 16px; border-radius: 12px; margin-bottom: 10px;
-      display: flex; justify-content: space-between; align-items: center;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
     }
     .cart-item .info { flex: 1; }
     .cart-item .name { font-weight: 600; font-size: 1rem; color: #1f2937; }
     .cart-item .detail { font-size: 0.85rem; color: #6b7280; margin-top: 2px; }
     .cart-item .total-price { font-weight: 700; color: #0f766e; font-size: 1.1rem; margin-left: 12px; }
     .cart-item .del-btn { background: none; border: none; font-size: 1.2rem; color: #ef4444; cursor: pointer; padding: 4px 8px; }
-
     .empty-cart { text-align: center; padding: 40px 20px; color: #9ca3af; }
     .empty-cart .icon { font-size: 3rem; margin-bottom: 12px; }
 
-    /* ===== FORM ADD (CHỈ 3 TRƯỜNG) ===== */
+    /* ===== FORM ADD ===== */
     .form-card { background: #fff; margin: 16px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
@@ -84,17 +82,25 @@
       font-size: 1rem; outline: none; transition: border-color 0.2s;
     }
     .form-group input:focus { border-color: #14b8a6; }
-
     .btn-primary {
       width: 100%; padding: 16px; background: #0f766e; color: #fff; border: none;
       border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 8px;
     }
     .btn-primary:active { background: #115e59; }
 
+    /* ===== NÚT CHỤP HÌNH ===== */
+    .camera-btn {
+      width: 100%; padding: 16px; background: #3b82f6; color: #fff; border: none;
+      border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .camera-btn:active { background: #2563eb; }
+    #ocr-status { display: none; text-align: center; color: #6b7280; font-size: 0.9rem; margin-bottom: 16px; }
+    
     /* ===== TABS ===== */
     .tab-bar {
       position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
-      display: flex; border-top: 1px solid #e5e7eb; padding-bottom: env(safe-area-inset-bottom);
+      display: flex; border-top: 1px solid #e5e7eb; padding-bottom: 20px; /* Thêm đệm dưới cho iPhone */
     }
     .tab-btn {
       flex: 1; padding: 12px 4px; background: none; border: none; font-size: 0.75rem;
@@ -120,17 +126,13 @@
   <!-- UPDATE BANNER -->
   <div id="update-banner">🔄 Có bản cập nhật mới — Bấm để tải lại</div>
 
-  <header><h1>🛒 Smart Shopping AI</h1></header>
-
   <!-- TAB: GIỎ HÀNG -->
   <div id="tab-cart" class="tab-panel active">
     <div class="budget-card">
-      <!-- CÒN LẠI TO -->
       <div class="remaining-block">
         <span class="remaining-label">Còn lại</span>
         <span class="remaining-amount" id="remaining-amount">50,00 €</span>
       </div>
-      <!-- ĐÃ MUA NHỎ -->
       <div class="spent-block">
         <span class="spent-label" id="spent-label">Đã mua: 0,00 € · 0 sản phẩm</span>
       </div>
@@ -143,7 +145,7 @@
       <div class="empty-cart" id="empty-cart">
         <div class="icon">🧺</div>
         <p>Giỏ hàng đang trống</p>
-        <p style="font-size:0.85rem;margin-top:8px;">Vào tab Thêm để nhập sản phẩm</p>
+        <p style="font-size:0.85rem;margin-top:8px;">Vào tab Thêm để chụp ảnh hoặc nhập tay.</p>
       </div>
     </div>
   </div>
@@ -151,7 +153,15 @@
   <!-- TAB: THÊM SẢN PHẨM -->
   <div id="tab-add" class="tab-panel">
     <div class="section-title">➕ Thêm sản phẩm</div>
+    
     <div class="form-card">
+      <!-- NÚT CHỤP HÌNH THÔNG MINH -->
+      <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none;">
+      <button class="camera-btn" id="camera-btn">
+        📷 Chụp ảnh nhãn giá (Tự động điền)
+      </button>
+      <p id="ocr-status">Đang đọc dữ liệu từ ảnh, vui lòng đợi...</p>
+
       <div class="form-group">
         <label>Tên sản phẩm (tự động gộp khối lượng nếu có)</label>
         <input type="text" id="p-name" placeholder="VD: Sữa tươi 1L">
@@ -166,13 +176,6 @@
       </div>
       <button class="btn-primary" id="add-btn">Thêm vào giỏ</button>
     </div>
-
-    <div class="form-card" style="margin-top:0;">
-      <p style="font-size:0.85rem;color:#6b7280;line-height:1.5;">
-        💡 <strong>Mẹo:</strong> Khi nhập tên, hãy gộp khối lượng vào luôn.<br>
-        Ví dụ: <em>"Sữa tươi 1L"</em>, <em>"Táo 500g"</em>.
-      </p>
-    </div>
   </div>
 
   <!-- TAB BAR -->
@@ -184,8 +187,6 @@
   <script>
     // ===== CONFIG =====
     const DEFAULT_BUDGET = 50;
-
-    // ===== STATE =====
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     let budget = parseFloat(localStorage.getItem('budget')) || DEFAULT_BUDGET;
 
@@ -228,6 +229,76 @@
       return num.toFixed(2).replace('.', ',') + ' €';
     }
 
+    // ===== CHỤP HÌNH & TRÍCH XUẤT (OCR) =====
+    const cameraBtn = document.getElementById('camera-btn');
+    const cameraInput = document.getElementById('camera-input');
+    const ocrStatus = document.getElementById('ocr-status');
+
+    cameraBtn.addEventListener('click', () => cameraInput.click());
+
+    cameraInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      ocrStatus.style.display = 'block';
+      ocrStatus.textContent = 'Đang phân tích ảnh...';
+      cameraBtn.disabled = true;
+
+      try {
+        const result = await Tesseract.recognize(file, 'deu', {
+          logger: m => { if(m.status === 'recognizing text') ocrStatus.textContent = 'Đang đọc chữ: ' + Math.round(m.progress * 100) + '%'; }
+        });
+        
+        const text = result.data.text;
+        const extracted = extractProduct(text);
+
+        if (extracted.productName) document.getElementById('p-name').value = extracted.productName;
+        if (extracted.salePrice > 0) priceInput.value = extracted.salePrice.toFixed(2).replace('.', ',');
+        
+        ocrStatus.textContent = '✅ Đã tự động điền thông tin!';
+        setTimeout(() => { ocrStatus.style.display = 'none'; }, 2000);
+
+      } catch (err) {
+        ocrStatus.textContent = '❌ Không thể đọc ảnh. Vui lòng thử lại hoặc nhập tay.';
+      } finally {
+        cameraBtn.disabled = false;
+        cameraInput.value = ''; // Reset để có thể chụp lại
+      }
+    });
+
+    function extractProduct(ocrText) {
+      const lines = ocrText.split('\n').map(l => l.trim()).filter(Boolean);
+
+      // 1. Tìm giá
+      const pricePatterns = [ /(\d+[.,]\d{2})\s*€/g, /€\s*(\d+[.,]\d{2})/g, /(\d+[.,]\d{2})\s*EUR/gi, /(?:^|\s)(\d+[.,]\d{2})(?=\s|$)/g ];
+      let prices = [];
+      for (const p of pricePatterns) {
+        const m = [...ocrText.matchAll(p)];
+        prices.push(...m.map(x => parsePrice(x[1])));
+      }
+      const validPrices = prices.filter(p => p > 0 && p < 1000);
+      const salePrice = validPrices.length ? Math.min(...validPrices) : 0;
+
+      // 2. Tìm tên
+      const unitWords = /^(€|EUR|kg|g|ml|l|stk|stück|angebot|aktion|rabatt|statt|uvp)/i;
+      const nameCandidates = lines.filter(l =>
+        /[A-Za-zÄÖÜäöüß]{3,}/.test(l) && !unitWords.test(l) && !/^\d+[.,]?\d*\s*€?$/.test(l) && l.length > 3
+      );
+      const productName = nameCandidates.sort((a, b) => b.length - a.length)[0] || '';
+
+      // 3. Khối lượng
+      const weightMatch = ocrText.match(/(\d+(?:[.,]\d+)?)\s*(kg|g|ml|l|stk|x)/i);
+      const weight = weightMatch ? `${weightMatch[1]} ${weightMatch[2]}` : '';
+
+      // 4. Gộp tên + khối lượng
+      let displayName = productName.replace(/\s+/g, ' ').replace(/[€\d.,]+\s*$/g, '').trim();
+      if (weight && !displayName.toLowerCase().includes(weight.toLowerCase())) {
+        displayName = `${displayName} ${weight}`;
+      }
+
+      return { productName: displayName, salePrice };
+    }
+
     // ===== ADD TO CART =====
     document.getElementById('add-btn').addEventListener('click', () => {
       const name = document.getElementById('p-name').value.trim();
@@ -241,25 +312,20 @@
       saveCart();
       renderCart();
 
-      // Reset form
       document.getElementById('p-name').value = '';
       priceInput.value = '';
       document.getElementById('p-qty').value = '1';
 
-      // Chuyển về tab giỏ hàng
       document.querySelector('.tab-btn[data-tab="cart"]').click();
     });
 
     // ===== SAVE & RENDER =====
-    function saveCart() {
-      localStorage.setItem('cart', JSON.stringify(cart));
-    }
+    function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); }
 
     function renderCart() {
       const list = document.getElementById('cart-list');
       const empty = document.getElementById('empty-cart');
 
-      // Xóa các item cũ (giữ lại empty placeholder)
       list.querySelectorAll('.cart-item').forEach(el => el.remove());
 
       if (cart.length === 0) {
@@ -281,7 +347,6 @@
           list.appendChild(div);
         });
 
-        // Gắn sự kiện xóa
         list.querySelectorAll('.del-btn').forEach(btn => {
           btn.addEventListener('click', () => {
             const idx = parseInt(btn.dataset.index);
@@ -291,7 +356,6 @@
           });
         });
       }
-
       updateBudget();
     }
 
@@ -300,26 +364,21 @@
       const remaining = budget - totalSpent;
       const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
 
-      // CÒN LẠI TO
       const remainEl = document.getElementById('remaining-amount');
       remainEl.textContent = formatPrice(remaining);
       remainEl.classList.toggle('negative', remaining < 0);
 
-      // ĐÃ MUA NHỎ
-      document.getElementById('spent-label').textContent =
-        `Đã mua: ${formatPrice(totalSpent)} · ${totalItems} sản phẩm`;
+      document.getElementById('spent-label').textContent = `Đã mua: ${formatPrice(totalSpent)} · ${totalItems} sản phẩm`;
 
-      // Thanh bar
       const pct = Math.min(100, (totalSpent / budget) * 100);
       const fill = document.getElementById('budget-fill');
       fill.style.width = pct + '%';
       fill.classList.toggle('over', totalSpent > budget);
 
-      // Cảnh báo
       document.getElementById('warn-msg').classList.toggle('show', remaining < 0);
     }
 
-    // ===== SERVICE WORKER (TỰ ĐỘNG CẬP NHẬT) =====
+    // ===== SERVICE WORKER =====
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js').then(reg => {
         reg.update();
@@ -339,7 +398,6 @@
       }).catch(() => {});
     }
 
-    // ===== KHỞI TẠO =====
     renderCart();
   </script>
 </body>
