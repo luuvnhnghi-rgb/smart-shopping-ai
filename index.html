@@ -9,7 +9,7 @@
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background: #f0fdfa; min-height: 100vh; padding-top: 90px; padding-bottom: 130px; }
+    body { background: #f0fdfa; min-height: 100vh; padding-top: 90px; padding-bottom: 120px; }
     #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f766e, #14b8a6); color: #fff; text-align: center; padding: 2rem; transition: opacity 0.5s ease, visibility 0.5s ease; }
     #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     #splash .logo { width: 100px; height: 100px; background: #fff; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1.5rem; }
@@ -79,8 +79,8 @@
     .stats-table th { background: #f9fafb; color: #4b5563; font-weight: 700; }
     .stats-table td.best-price { background: #dcfce7; color: #166534; font-weight: 700; border-radius: 6px; }
     .stats-table td.no-data { color: #9ca3af; font-style: italic; }
-    .tab-bar { position: fixed; bottom: 20px; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-    .tab-btn { flex: 1; padding: 12px 4px; background: none; border: none; font-size: 0.75rem; color: #9ca3af; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; }
+    .tab-btn { flex: 1; padding: 12px 4px 16px 4px; background: none; border: none; font-size: 0.75rem; color: #9ca3af; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .tab-btn .icon { font-size: 1.4rem; }
     .tab-btn.active { color: #0f766e; font-weight: 600; }
     .tab-panel { display: none; }
@@ -194,12 +194,16 @@
   </div>
 
   <script>
+    // 1. STATE & UTILS
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     let budget = parseFloat(localStorage.getItem('budget')) || 50;
     let history = JSON.parse(localStorage.getItem('history') || '[]');
-    let currentCategory = '';
-    let selectedDetail = '';
+    let currentCategory = '', selectedDetail = '';
 
+    const parsePrice = (str) => parseFloat(str.replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
+    const formatPrice = (num) => num.toFixed(2).replace('.', ',') + ' €';
+
+    // 2. SPLASH & TABS
     const splash = document.getElementById('splash');
     document.getElementById('splash-btn').onclick = () => splash.classList.add('hidden');
     setTimeout(() => splash.classList.add('hidden'), 2500);
@@ -213,6 +217,7 @@
       };
     });
 
+    // 3. BUDGET
     document.getElementById('edit-budget-btn').onclick = () => {
       const newBudget = prompt("Enter spending limit (€):", budget.toFixed(2).replace('.', ','));
       if (newBudget) {
@@ -222,9 +227,6 @@
       }
     };
 
-    function parsePrice(str) { return parseFloat(str.replace(',', '.').replace(/[^0-9.]/g, '')) || 0; }
-    function formatPrice(num) { return num.toFixed(2).replace('.', ',') + ' €'; }
-
     const priceInput = document.getElementById('p-price');
     priceInput.oninput = (e) => {
       let v = e.target.value.replace(/[^0-9.,]/g, '');
@@ -233,6 +235,7 @@
       e.target.value = v;
     };
 
+    // 4. CATEGORY & MODAL
     const catBtns = document.querySelectorAll('.category-btn');
     const pNameInput = document.getElementById('p-name');
     const pQtyInput = document.getElementById('p-qty');
@@ -242,7 +245,6 @@
     const modalNameInput = document.getElementById('modal-name-input');
     const modalPrice = document.getElementById('modal-price');
     const modalQty = document.getElementById('modal-qty');
-
     const spiceOptions = ['Sugar', 'Salt', 'Pepper', 'Chillies', 'Soy Sauce', 'Hot Chilli Sauce'];
 
     function openModal(cat) {
@@ -275,32 +277,24 @@
         modalNameGroup.style.display = 'block';
         document.getElementById('modal-name-label').textContent = 'Spice Name (Edit if needed)';
       } else if (cat === 'Vegetables') {
-        modalNameGroup.style.display = 'block';
-        document.getElementById('modal-name-label').textContent = 'Vegetable Name';
+        modalNameGroup.style.display = 'block'; document.getElementById('modal-name-label').textContent = 'Vegetable Name';
       } else if (cat === 'Fish') {
-        modalNameGroup.style.display = 'block';
-        document.getElementById('modal-name-label').textContent = 'Fish Name';
+        modalNameGroup.style.display = 'block'; document.getElementById('modal-name-label').textContent = 'Fish Name';
       }
       modal.classList.add('show');
     }
 
-    document.getElementById('modal-cancel-btn').onclick = () => {
-      modal.classList.remove('show');
-      catBtns.forEach(b => b.classList.remove('selected')); currentCategory = '';
-    };
-
+    document.getElementById('modal-cancel-btn').onclick = () => { modal.classList.remove('show'); catBtns.forEach(b => b.classList.remove('selected')); currentCategory = ''; };
+    
     document.getElementById('modal-confirm-btn').onclick = () => {
       let finalName = selectedDetail;
-      const cat = currentCategory;
-
-      if (cat === 'Vegetables' || cat === 'Fish' || cat === 'Spices') {
+      if (['Vegetables', 'Fish', 'Spices'].includes(currentCategory)) {
         if (!modalNameInput.value.trim()) return alert('Please enter a name.');
         finalName = modalNameInput.value.trim();
       } else {
         if (!selectedDetail) return alert('Please select an option.');
       }
-
-      pNameInput.value = `${cat}: ${finalName}`;
+      pNameInput.value = `${currentCategory}: ${finalName}`;
       if (modalPrice.value) priceInput.value = modalPrice.value;
       const qtyVal = parseInt(modalQty.value);
       pQtyInput.value = (qtyVal > 0) ? qtyVal : 1;
@@ -310,25 +304,21 @@
     catBtns.forEach(btn => {
       btn.onclick = (e) => {
         e.preventDefault();
-        catBtns.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        const cat = btn.dataset.cat;
-        currentCategory = cat; 
-        if (['Beef', 'Chicken', 'Pork', 'Fish', 'Vegetables', 'Spices'].includes(cat)) return openModal(cat);
-        if (cat === 'Other') { pNameInput.value = ""; pNameInput.focus(); }
-        else pNameInput.value = cat;
+        catBtns.forEach(b => b.classList.remove('selected')); btn.classList.add('selected');
+        currentCategory = btn.dataset.cat;
+        if (['Beef', 'Chicken', 'Pork', 'Fish', 'Vegetables', 'Spices'].includes(currentCategory)) return openModal(currentCategory);
+        pNameInput.value = (currentCategory === 'Other') ? "" : currentCategory;
+        if(currentCategory === 'Other') pNameInput.focus();
       };
     });
 
+    // 5. CART ACTIONS
     document.getElementById('add-btn').onclick = () => {
-      const store = document.getElementById('store-select').value;
-      const name = pNameInput.value.trim();
-      const price = parsePrice(priceInput.value);
-      const qty = parseInt(pQtyInput.value) || 1;
+      const name = pNameInput.value.trim(), price = parsePrice(priceInput.value), qty = parseInt(pQtyInput.value) || 1;
       if (!name) return alert('Please enter product name');
-      if (!currentCategory) return alert('Please select category'); 
+      if (!currentCategory) return alert('Please select category');
       if (price <= 0) return alert('Please enter valid price');
-      cart.push({ store, name, category: currentCategory, unitPrice: price, quantity: qty });
+      cart.push({ store: document.getElementById('store-select').value, name, category: currentCategory, unitPrice: price, quantity: qty });
       saveCart(); renderCart();
       pNameInput.value = ''; priceInput.value = ''; pQtyInput.value = '1';
       catBtns.forEach(b => b.classList.remove('selected')); currentCategory = '';
@@ -338,100 +328,69 @@
     function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); }
 
     function renderCart() {
-      const list = document.getElementById('cart-list');
-      const empty = document.getElementById('empty-cart');
-      const saveBtn = document.getElementById('save-trip-btn');
+      const list = document.getElementById('cart-list'), empty = document.getElementById('empty-cart'), saveBtn = document.getElementById('save-trip-btn');
       list.querySelectorAll('.cart-item').forEach(el => el.remove());
       if (cart.length === 0) { empty.style.display = 'block'; saveBtn.style.display = 'none'; }
       else {
         empty.style.display = 'none'; saveBtn.style.display = 'block';
         cart.forEach((item, index) => {
-          const div = document.createElement('div');
-          div.className = 'cart-item';
-          div.innerHTML = `
-            <div class="info">
-              <div class="name">${item.name}</div>
-              <div class="detail">[${item.store}] [${item.category}] ${formatPrice(item.unitPrice)} × ${item.quantity}</div>
-            </div>
-            <span class="total-price">${formatPrice(item.unitPrice * item.quantity)}</span>
-            <button class="del-btn" data-index="${index}">✕</button>
-          `;
+          const div = document.createElement('div'); div.className = 'cart-item';
+          div.innerHTML = `<div class="info"><div class="name">${item.name}</div><div class="detail">[${item.store}] [${item.category}] ${formatPrice(item.unitPrice)} × ${item.quantity}</div></div><span class="total-price">${formatPrice(item.unitPrice * item.quantity)}</span><button class="del-btn" data-index="${index}">✕</button>`;
           list.appendChild(div);
         });
-        list.querySelectorAll('.del-btn').forEach(btn => {
-          btn.onclick = () => { cart.splice(parseInt(btn.dataset.index), 1); saveCart(); renderCart(); };
-        });
+        list.querySelectorAll('.del-btn').forEach(btn => btn.onclick = () => { cart.splice(parseInt(btn.dataset.index), 1); saveCart(); renderCart(); });
       }
       updateBudget();
     }
 
     function updateBudget() {
       const totalSpent = cart.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
-      const remaining = budget - totalSpent;
-      const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+      const remaining = budget - totalSpent, totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
       const remainEl = document.getElementById('remaining-amount');
-      remainEl.textContent = formatPrice(remaining);
-      remainEl.classList.toggle('negative', remaining < 0);
+      remainEl.textContent = formatPrice(remaining); remainEl.classList.toggle('negative', remaining < 0);
       document.getElementById('spent-label').textContent = `Spent: ${formatPrice(totalSpent)} · ${totalItems} items`;
-      const pct = Math.min(100, (totalSpent / budget) * 100);
       const fill = document.getElementById('budget-fill');
-      fill.style.width = pct + '%';
-      fill.classList.toggle('over', totalSpent > budget);
+      fill.style.width = Math.min(100, (totalSpent / budget) * 100) + '%'; fill.classList.toggle('over', totalSpent > budget);
       document.getElementById('warn-msg').classList.toggle('show', remaining < 0);
     }
 
+    // 6. HISTORY
     document.getElementById('save-trip-btn').onclick = () => {
       if (cart.length === 0) return;
-      const total = cart.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
-      const date = new Date().toLocaleString('en-GB');
-      let details = cart.map(i => `- [${i.store}] ${i.name} (${i.category}): ${i.quantity} x ${formatPrice(i.unitPrice)}`).join('\n');
-      history.unshift({ date, total, items: cart.length, details, rawData: [...cart] });
+      const total = cart.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0), date = new Date().toLocaleString('en-GB');
+      const details = cart.map(i => `- [${i.store}] ${i.name} (${i.category}): ${i.quantity} x ${formatPrice(i.unitPrice)}`).join('\n');
+      history.unshift({ date, total, details, rawData: [...cart] });
       localStorage.setItem('history', JSON.stringify(history));
       cart = []; saveCart(); renderCart(); renderHistory();
-      alert('Trip saved to history!');
-      document.querySelector('.tab-btn[data-tab="history"]').click();
+      alert('Trip saved to history!'); document.querySelector('.tab-btn[data-tab="history"]').click();
     };
 
     function renderHistory() {
-      const list = document.getElementById('history-list');
-      const empty = document.getElementById('empty-history');
+      const list = document.getElementById('history-list'), empty = document.getElementById('empty-history');
       list.querySelectorAll('.history-item').forEach(el => el.remove());
       if (history.length === 0) empty.style.display = 'block';
       else {
         empty.style.display = 'none';
         history.forEach((item, index) => {
-          const div = document.createElement('div');
-          div.className = 'history-item';
-          div.innerHTML = `
-            <div class="history-header">
-              <div class="history-header-left">
-                <span class="history-date">${item.date}</span>
-                <span class="history-price">${formatPrice(item.total)}</span>
-              </div>
-              <button class="history-del-btn" data-index="${index}">Delete</button>
-            </div>
-            <div class="history-detail">${item.details}</div>
-          `;
+          const div = document.createElement('div'); div.className = 'history-item';
+          div.innerHTML = `<div class="history-header"><div class="history-header-left"><span class="history-date">${item.date}</span><span class="history-price">${formatPrice(item.total)}</span></div><button class="history-del-btn" data-index="${index}">Delete</button></div><div class="history-detail">${item.details}</div>`;
           list.appendChild(div);
         });
-        list.querySelectorAll('.history-del-btn').forEach(btn => {
-          btn.onclick = () => {
-            if (confirm("Delete this history?")) {
-              history.splice(parseInt(btn.dataset.index), 1);
-              localStorage.setItem('history', JSON.stringify(history));
-              renderHistory();
-              if (document.getElementById('tab-stats').classList.contains('active')) renderStats();
-            }
-          };
+        list.querySelectorAll('.history-del-btn').forEach(btn => btn.onclick = () => {
+          if (confirm("Delete this history?")) {
+            history.splice(parseInt(btn.dataset.index), 1); localStorage.setItem('history', JSON.stringify(history));
+            renderHistory(); if (document.getElementById('tab-stats').classList.contains('active')) renderStats();
+          }
         });
       }
     }
 
+    // 7. STATS
     function renderStats() {
-      const container = document.getElementById('stats-container');
-      let allPurchases = [];
+      const container = document.getElementById('stats-container'), allPurchases = [];
       history.forEach(trip => { if (trip.rawData) allPurchases.push(...trip.rawData); });
       if (allPurchases.length === 0) return container.innerHTML = '<div style="text-align:center; padding: 20px; color:#9ca3af;">No data available.</div>';
+      
       const categoryData = {};
       allPurchases.forEach(item => {
         const cat = item.category || 'Other', store = item.store || 'Other';
@@ -439,23 +398,23 @@
         if (!categoryData[cat][store]) categoryData[cat][store] = [];
         categoryData[cat][store].push(item.unitPrice);
       });
+
       const allStores = [...new Set(allPurchases.map(i => i.store || 'Other'))].sort();
       let html = '<table class="stats-table"><thead><tr><th>Category</th>';
       allStores.forEach(store => html += `<th>${store}</th>`);
       html += '</tr></thead><tbody>';
+      
       for (const cat in categoryData) {
         html += `<tr><td style="font-weight:700;">${cat}</td>`;
         let minAvg = Infinity, storeAvgs = {};
         for (const store in categoryData[cat]) {
           const prices = categoryData[cat][store];
           const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
-          storeAvgs[store] = avg;
-          if (avg < minAvg) minAvg = avg;
+          storeAvgs[store] = avg; if (avg < minAvg) minAvg = avg;
         }
         allStores.forEach(store => {
           if (storeAvgs[store] !== undefined) {
-            const isBest = Math.abs(storeAvgs[store] - minAvg) < 0.001; 
-            html += `<td class="${isBest ? 'best-price' : ''}">${formatPrice(storeAvgs[store])}</td>`;
+            html += `<td class="${Math.abs(storeAvgs[store] - minAvg) < 0.001 ? 'best-price' : ''}">${formatPrice(storeAvgs[store])}</td>`;
           } else html += `<td class="no-data">-</td>`;
         });
         html += '</tr>';
@@ -463,6 +422,7 @@
       container.innerHTML = html + '</tbody></table>';
     }
 
+    // 8. SERVICE WORKER & ICON
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js').then(reg => {
         reg.update();
@@ -479,4 +439,16 @@
       }).catch(() => {});
     }
 
-    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#0f766e"/><path d="M160 160h192l-16 160H176z" fill="none" stroke="#ffffff" stroke-width="32" stroke-line
+    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#0f766e"/><path d="M160 160h192l-16 160H176z" fill="none" stroke="#ffffff" stroke-width="32" stroke-linejoin="round"/><path d="M144 112h32l24 48" fill="none" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/><circle cx="208" cy="368" r="24" fill="#ffffff"/><circle cx="336" cy="368" r="24" fill="#ffffff"/></svg>`;
+    document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(new Blob([JSON.stringify({
+      name: "Smart Shopping AI", short_name: "SmartShop", start_url: "/", display: "standalone",
+      background_color: "#0f766e", theme_color: "#0f766e",
+      icons: [{ src: "data:image/svg+xml;base64," + btoa(iconSvg), sizes: "512x512", type: "image/svg+xml" }]
+    })], {type: 'application/json'}));
+
+    // INIT
+    renderCart();
+    renderHistory();
+  </script>
+</body>
+</html>
