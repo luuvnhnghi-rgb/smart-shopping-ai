@@ -11,28 +11,22 @@
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     body { background: #f0fdfa; min-height: 100vh; padding-top: 90px; padding-bottom: 130px; }
 
-    /* ===== SPLASH SCREEN ===== */
-    #splash {
-      position: fixed; inset: 0; z-index: 9999;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #0f766e, #14b8a6);
-      color: #fff; text-align: center; padding: 2rem;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
-    }
+    /* SPLASH */
+    #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f766e, #14b8a6); color: #fff; text-align: center; padding: 2rem; transition: opacity 0.5s ease, visibility 0.5s ease; }
     #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     #splash .logo { width: 100px; height: 100px; background: #fff; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1.5rem; }
     #splash h1 { font-size: 1.7rem; margin-bottom: 0.5rem; line-height: 1.3; }
     #splash p { font-size: 1rem; opacity: 0.85; margin-bottom: 2rem; }
     #splash button { background: #fff; color: #0f766e; border: none; padding: 14px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
 
-    /* ===== UPDATE BANNER ===== */
-    #update-banner { display: none; background: #fbbf24; color: #78350f; padding: 12px 16px; text-align: center; font-weight: 600; cursor: pointer; position: sticky; top: 0; z-index: 100; }
+    /* BANNER */
+    #update-banner { display: none; background: #fbbf24; color: #78350f; padding: 12px; text-align: center; font-weight: 600; cursor: pointer; position: sticky; top: 0; z-index: 100; }
     #update-banner.show { display: block; }
 
-    /* ===== BUDGET CARD ===== */
+    /* BUDGET */
     .budget-card { background: #fff; margin: 16px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .remaining-block { text-align: center; margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; }
-    .remaining-label { font-size: 0.85rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+    .remaining-label { font-size: 0.85rem; color: #6b7280; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
     .edit-budget-btn { background: #e0f2fe; color: #0284c7; border: none; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
     .remaining-amount { font-size: 2.8rem; font-weight: 800; color: #0f766e; display: block; line-height: 1.2; margin-top: 4px; }
     .remaining-amount.negative { color: #dc2626; }
@@ -44,7 +38,7 @@
     .warn-msg { display: none; font-size: 0.85rem; color: #dc2626; text-align: center; margin-top: 8px; }
     .warn-msg.show { display: block; }
 
-    /* ===== CART & HISTORY ===== */
+    /* CART & HISTORY */
     .section-title { padding: 0 16px; margin: 24px 0 12px; font-size: 1.1rem; font-weight: 700; color: #134e4a; display: flex; justify-content: space-between; align-items: center;}
     .cart-list { margin: 0 16px; }
     .cart-item { background: #fff; padding: 14px 16px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
@@ -57,62 +51,43 @@
     .empty-cart .icon { font-size: 3rem; margin-bottom: 12px; }
     .btn-save-trip { background: #f59e0b; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
     
-    /* HISTORY */
     .history-item { background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
     .history-header { display: flex; justify-content: space-between; align-items: center; font-weight: 700; margin-bottom: 8px; color: #374151; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;}
     .history-header-left { display: flex; flex-direction: column; }
     .history-date { font-size: 0.85rem; color: #6b7280; font-weight: normal; }
     .history-price { color: #0f766e; font-size: 1.1rem;}
     .history-del-btn { background: #fee2e2; color: #dc2626; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-left: 12px; font-size: 0.8rem; }
-    .history-del-btn:active { background: #fca5a5; }
     .history-detail { font-size: 0.85rem; color: #6b7280; white-space: pre-wrap; }
 
-    /* ===== FORM ADD ===== */
+    /* FORM */
     .form-card { background: #fff; margin: 16px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
-    .form-group input, .form-group select { width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; outline: none; transition: border-color 0.2s; background: #fff; }
+    .form-group input, .form-group select { width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; outline: none; background: #fff; }
     .form-group input:focus, .form-group select:focus { border-color: #14b8a6; }
     .btn-primary { width: 100%; padding: 16px; background: #0f766e; color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 8px; }
 
-    /* ===== DANH MỤC ===== */
+    /* CATEGORY */
     .category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
-    .category-btn { 
-      background: #f3f4f6; border: 2px solid transparent; padding: 12px; border-radius: 12px; 
-      font-size: 0.95rem; font-weight: 600; color: #374151; cursor: pointer; text-align: center;
-      transition: all 0.2s;
-    }
-    .category-btn:active { background: #e5e7eb; }
+    .category-btn { background: #f3f4f6; border: 2px solid transparent; padding: 12px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; color: #374151; cursor: pointer; text-align: center; }
     .category-btn.selected { background: #ccfbf1; border-color: #14b8a6; color: #0f766e; }
 
-    /* ===== POPUP MODAL ===== */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000;
-      justify-content: center; align-items: center; padding: 20px;
-    }
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
     .modal-overlay.show { display: flex; }
-    .modal-content {
-      background: #fff; width: 100%; max-width: 350px; border-radius: 20px; padding: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: popIn 0.2s ease-out;
-    }
-    @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-content { background: #fff; width: 100%; max-width: 350px; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     .modal-title { font-size: 1.1rem; font-weight: 700; color: #0f766e; margin-bottom: 16px; text-align: center; }
     .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-    .modal-grid button {
-      padding: 12px; background: #f0fdfa; border: 2px solid #ccfbf1; border-radius: 12px;
-      font-weight: 600; color: #0f766e; cursor: pointer; font-size: 0.95rem;
-    }
-    .modal-grid button:active, .modal-grid button.selected-opt { background: #99f6e4; border-color: #14b8a6; }
+    .modal-grid button { padding: 12px; background: #f0fdfa; border: 2px solid #ccfbf1; border-radius: 12px; font-weight: 600; color: #0f766e; cursor: pointer; font-size: 0.95rem; }
+    .modal-grid button.selected-opt { background: #99f6e4; border-color: #14b8a6; }
     .modal-qty-label { font-size: 0.9rem; color: #4b5563; margin-bottom: 6px; font-weight: 600; display: block; }
     .modal-qty-input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 12px; margin-bottom: 16px; font-size: 1rem; outline: none;}
-    .modal-qty-input:focus { border-color: #14b8a6; }
     .modal-btns { display: flex; gap: 10px; }
     .modal-btns button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; }
     .modal-cancel { background: #f3f4f6; color: #4b5563; }
     .modal-confirm { background: #0f766e; color: #fff; }
-    .modal-confirm:active { background: #115e59; }
 
-    /* ===== THỐNG KÊ ===== */
+    /* STATS */
     .stats-card { background: #fff; margin: 16px; padding: 16px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow-x: auto; }
     .stats-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 400px; }
     .stats-table th, .stats-table td { padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem; }
@@ -120,12 +95,11 @@
     .stats-table td.best-price { background: #dcfce7; color: #166534; font-weight: 700; border-radius: 6px; }
     .stats-table td.no-data { color: #9ca3af; font-style: italic; }
 
-    /* ===== TABS ===== */
+    /* TABS */
     .tab-bar { position: fixed; bottom: 20px; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
     .tab-btn { flex: 1; padding: 12px 4px; background: none; border: none; font-size: 0.75rem; color: #9ca3af; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .tab-btn .icon { font-size: 1.4rem; }
     .tab-btn.active { color: #0f766e; font-weight: 600; }
-
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
   </style>
@@ -141,53 +115,37 @@
 
   <div id="update-banner">🔄 New update available — Tap to reload</div>
 
-  <!-- TAB: CART -->
   <div id="tab-cart" class="tab-panel active">
     <div class="budget-card">
       <div class="remaining-block">
-        <span class="remaining-label">
-          Remaining
-          <button class="edit-budget-btn" id="edit-budget-btn">Edit</button>
-        </span>
+        <span class="remaining-label">Remaining <button class="edit-budget-btn" id="edit-budget-btn">Edit</button></span>
         <span class="remaining-amount" id="remaining-amount">50,00 €</span>
       </div>
-      <div class="spent-block">
-        <span class="spent-label" id="spent-label">Spent: 0,00 € · 0 items</span>
-      </div>
+      <div class="spent-block"><span class="spent-label" id="spent-label">Spent: 0,00 € · 0 items</span></div>
       <div class="budget-bar"><div class="budget-fill" id="budget-fill" style="width:0%"></div></div>
-      <p class="warn-msg" id="warn-msg">⚠ You have exceeded your budget. Consider removing some items.</p>
+      <p class="warn-msg" id="warn-msg">⚠ You have exceeded your budget.</p>
     </div>
-
     <div class="section-title">
       <span>🧺 Shopping Cart</span>
       <button class="btn-save-trip" id="save-trip-btn" style="display: none;">Save Trip</button>
     </div>
     <div class="cart-list" id="cart-list">
       <div class="empty-cart" id="empty-cart">
-        <div class="icon">🧺</div>
-        <p>Your cart is empty</p>
-        <p style="font-size:0.85rem;margin-top:8px;">Go to the Add tab to add products.</p>
+        <div class="icon">🧺</div><p>Your cart is empty</p>
       </div>
     </div>
   </div>
 
-  <!-- TAB: ADD PRODUCT -->
   <div id="tab-add" class="tab-panel">
     <div class="section-title">➕ Add Product</div>
-    
     <div class="form-card">
       <div class="form-group">
         <label>Select Store</label>
         <select id="store-select">
-          <option value="Aldi">Aldi</option>
-          <option value="Lidl">Lidl</option>
-          <option value="Rewe">Rewe</option>
-          <option value="Kaufland">Kaufland</option>
-          <option value="Edeka">Edeka</option>
-          <option value="Other">Other store...</option>
+          <option value="Aldi">Aldi</option><option value="Lidl">Lidl</option><option value="Rewe">Rewe</option>
+          <option value="Kaufland">Kaufland</option><option value="Edeka">Edeka</option><option value="Other">Other store...</option>
         </select>
       </div>
-
       <div class="form-group">
         <label>Select Category</label>
         <div class="category-grid" id="category-grid">
@@ -203,44 +161,26 @@
           <button class="category-btn" data-cat="Other" style="grid-column: span 2;">🛒 Other (Custom)</button>
         </div>
       </div>
-
-      <div class="form-group">
-        <label>Product Name</label>
-        <input type="text" id="p-name" placeholder="e.g. Fresh Milk 1L">
-      </div>
-      <div class="form-group">
-        <label>Unit Price (€)</label>
-        <input type="text" id="p-price" inputmode="decimal" placeholder="e.g. 2,49">
-      </div>
-      <div class="form-group">
-        <label>Quantity</label>
-        <input type="number" id="p-qty" min="1" value="1">
-      </div>
+      <div class="form-group"><label>Product Name</label><input type="text" id="p-name" placeholder="e.g. Fresh Milk 1L"></div>
+      <div class="form-group"><label>Unit Price (€)</label><input type="text" id="p-price" inputmode="decimal" placeholder="e.g. 2,49"></div>
+      <div class="form-group"><label>Quantity</label><input type="number" id="p-qty" min="1" value="1"></div>
       <button class="btn-primary" id="add-btn">Add to Cart</button>
     </div>
   </div>
 
-  <!-- TAB: HISTORY -->
   <div id="tab-history" class="tab-panel">
     <div class="section-title">📜 Purchase History</div>
     <div class="cart-list" id="history-list">
-      <div class="empty-cart" id="empty-history">
-        <div class="icon">📜</div>
-        <p>No history yet</p>
-      </div>
+      <div class="empty-cart" id="empty-history"><div class="icon">📜</div><p>No history yet</p></div>
     </div>
   </div>
 
-  <!-- TAB: STATS -->
   <div id="tab-stats" class="tab-panel">
     <div class="section-title">📊 Store Price Comparison</div>
-    <p style="padding: 0 16px; font-size: 0.85rem; color: #6b7280; margin-bottom: 12px;">
-      The table below shows the <strong>average price</strong> of each category per store (based on history). Green boxes indicate the cheapest store.
-    </p>
     <div class="stats-card" id="stats-container"></div>
   </div>
 
-  <!-- POPUP MODAL CHO THỊT -->
+  <!-- POPUP MODAL -->
   <div class="modal-overlay" id="meat-modal">
     <div class="modal-content">
       <div class="modal-title" id="modal-title">Select Detail</div>
@@ -254,7 +194,6 @@
     </div>
   </div>
 
-  <!-- TAB BAR -->
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="cart"><span class="icon">🧺</span>Cart</button>
     <button class="tab-btn" data-tab="add"><span class="icon">➕</span>Add</button>
@@ -263,80 +202,55 @@
   </div>
 
   <script>
-    // ===== STATE =====
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     let budget = parseFloat(localStorage.getItem('budget')) || 50;
     let history = JSON.parse(localStorage.getItem('history') || '[]');
-
     let currentCategory = '';
     let selectedDetail = '';
-    
-    // ===== SPLASH =====
+
+    // SPLASH
     const splash = document.getElementById('splash');
-    document.getElementById('splash-btn').addEventListener('click', () => splash.classList.add('hidden'));
+    document.getElementById('splash-btn').onclick = () => splash.classList.add('hidden');
     setTimeout(() => splash.classList.add('hidden'), 2500);
 
-    // ===== TABS =====
+    // TABS
     document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.onclick = () => {
+        document.querySelectorAll('.tab-btn, .tab-panel').forEach(el => el.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-        
-        if (btn.dataset.tab === 'stats') {
-          renderStats();
-        }
-      });
+        if (btn.dataset.tab === 'stats') renderStats();
+      };
     });
 
-    // ===== EDIT BUDGET =====
-    document.getElementById('edit-budget-btn').addEventListener('click', () => {
+    // BUDGET
+    document.getElementById('edit-budget-btn').onclick = () => {
       const newBudget = prompt("Enter spending limit (€):", budget.toFixed(2).replace('.', ','));
-      if (newBudget !== null && newBudget.trim() !== '') {
+      if (newBudget) {
         const val = parsePrice(newBudget);
-        if (val > 0) {
-          budget = val;
-          localStorage.setItem('budget', budget);
-          updateBudget();
-        } else {
-          alert('Invalid amount!');
-        }
+        if (val > 0) { budget = val; localStorage.setItem('budget', budget); updateBudget(); }
+        else alert('Invalid amount!');
       }
-    });
+    };
 
-    // ===== FORMAT & PARSE PRICE =====
-    function parsePrice(str) {
-      if (!str) return 0;
-      const normalized = str.replace(',', '.').replace(/[^0-9.]/g, '');
-      return parseFloat(normalized) || 0;
-    }
-    function formatPrice(num) {
-      return num.toFixed(2).replace('.', ',') + ' €';
-    }
+    function parsePrice(str) { return parseFloat(str.replace(',', '.').replace(/[^0-9.]/g, '')) || 0; }
+    function formatPrice(num) { return num.toFixed(2).replace('.', ',') + ' €'; }
 
     const priceInput = document.getElementById('p-price');
-    priceInput.addEventListener('input', (e) => {
+    priceInput.oninput = (e) => {
       let v = e.target.value.replace(/[^0-9.,]/g, '');
-      const lastComma = v.lastIndexOf(',');
-      const lastDot = v.lastIndexOf('.');
-      if (lastComma > -1 && lastDot > -1) {
-        if (lastComma > lastDot) v = v.replace(/\./g, '');
-        else v = v.replace(/,/g, '');
-      }
+      const lc = v.lastIndexOf(','), ld = v.lastIndexOf('.');
+      if (lc > -1 && ld > -1) { v = (lc > ld) ? v.replace(/\./g, '') : v.replace(/,/g, ''); }
       e.target.value = v;
-    });
+    };
 
-    // ===== XỬ LÝ CHỌN DANH MỤC & POPUP =====
+    // CATEGORY & MODAL
     const catBtns = document.querySelectorAll('.category-btn');
     const pNameInput = document.getElementById('p-name');
     const pQtyInput = document.getElementById('p-qty');
-    
     const meatModal = document.getElementById('meat-modal');
-    const modalTitle = document.getElementById('modal-title');
     const modalOptions = document.getElementById('modal-options');
-    const modalQty = document.getElementById('modal-qty');
-
+    
     const meatOptions = {
       'Beef': ['Thịt bằm', 'Thịt mảng steak'],
       'Pork': ['Thịt bằm', 'Thịt mảng steak'],
@@ -344,124 +258,82 @@
     };
 
     function showMeatModal(cat) {
-      modalTitle.textContent = `Select ${cat} Detail`;
-      modalOptions.innerHTML = '';
-      selectedDetail = '';
-      
+      document.getElementById('modal-title').textContent = `Select ${cat} Detail`;
+      modalOptions.innerHTML = ''; selectedDetail = '';
       meatOptions[cat].forEach(opt => {
         const btn = document.createElement('button');
         btn.textContent = opt;
-        btn.addEventListener('click', () => {
+        btn.onclick = () => {
           modalOptions.querySelectorAll('button').forEach(b => b.classList.remove('selected-opt'));
-          btn.classList.add('selected-opt');
-          selectedDetail = opt;
-        });
+          btn.classList.add('selected-opt'); selectedDetail = opt;
+        };
         modalOptions.appendChild(btn);
       });
-
-      modalQty.value = ''; 
+      document.getElementById('modal-qty').value = ''; 
       meatModal.classList.add('show');
     }
 
-    document.getElementById('modal-cancel-btn').addEventListener('click', () => {
+    document.getElementById('modal-cancel-btn').onclick = () => {
       meatModal.classList.remove('show');
       catBtns.forEach(b => b.classList.remove('selected'));
       currentCategory = '';
-    });
+    };
 
-    document.getElementById('modal-confirm-btn').addEventListener('click', () => {
-      if (!selectedDetail) {
-        alert('Please select a detail option.');
-        return;
-      }
-
+    document.getElementById('modal-confirm-btn').onclick = () => {
+      if (!selectedDetail) return alert('Please select a detail option.');
       pNameInput.value = `${currentCategory}: ${selectedDetail}`;
-      
-      const qtyVal = parseInt(modalQty.value);
-      if (qtyVal > 0) {
-        pQtyInput.value = qtyVal;
-      } else {
-        pQtyInput.value = 1;
-      }
-
+      const qtyVal = parseInt(document.getElementById('modal-qty').value);
+      pQtyInput.value = (qtyVal > 0) ? qtyVal : 1;
       meatModal.classList.remove('show');
       pNameInput.focus(); 
-    });
+    };
 
     catBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.onclick = (e) => {
         e.preventDefault();
         catBtns.forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
-
         const cat = btn.dataset.cat;
         currentCategory = cat; 
-
-        if (['Beef', 'Pork', 'Chicken'].includes(cat)) {
-          showMeatModal(cat);
-          return;
-        }
-
+        if (['Beef', 'Pork', 'Chicken'].includes(cat)) return showMeatModal(cat);
         if (cat === 'Spices') {
-          const spiceName = prompt("Please enter the spice name:");
-          if (spiceName && spiceName.trim() !== '') {
-            pNameInput.value = "Spice: " + spiceName.trim();
-          } else {
-            btn.classList.remove('selected');
-            currentCategory = '';
-            pNameInput.value = "";
-          }
-        } else if (cat === 'Other') {
-          pNameInput.value = "";
-          pNameInput.focus();
-        } else {
-          pNameInput.value = cat;
-        }
-      });
+          const spice = prompt("Please enter the spice name:");
+          if (spice && spice.trim() !== '') pNameInput.value = "Spice: " + spice.trim();
+          else { btn.classList.remove('selected'); currentCategory = ''; pNameInput.value = ""; }
+        } else if (cat === 'Other') { pNameInput.value = ""; pNameInput.focus(); }
+        else pNameInput.value = cat;
+      };
     });
 
-    // ===== ADD TO CART =====
-    document.getElementById('add-btn').addEventListener('click', () => {
+    // ADD TO CART
+    document.getElementById('add-btn').onclick = () => {
       const store = document.getElementById('store-select').value;
       const name = pNameInput.value.trim();
       const price = parsePrice(priceInput.value);
-      const qty = parseInt(document.getElementById('p-qty').value) || 1;
-
-      if (!name) { alert('Please enter or select a product name'); return; }
-      if (!currentCategory) { alert('Please select a category'); return; } 
-      if (price <= 0) { alert('Please enter a valid price'); return; }
+      const qty = parseInt(pQtyInput.value) || 1;
+      if (!name) return alert('Please enter or select a product name');
+      if (!currentCategory) return alert('Please select a category'); 
+      if (price <= 0) return alert('Please enter a valid price');
 
       cart.push({ store, name, category: currentCategory, unitPrice: price, quantity: qty });
-      saveCart();
-      renderCart();
-
-      pNameInput.value = '';
-      priceInput.value = '';
-      document.getElementById('p-qty').value = '1';
-      catBtns.forEach(b => b.classList.remove('selected'));
-      currentCategory = '';
-
+      saveCart(); renderCart();
+      pNameInput.value = ''; priceInput.value = ''; pQtyInput.value = '1';
+      catBtns.forEach(b => b.classList.remove('selected')); currentCategory = '';
       document.querySelector('.tab-btn[data-tab="cart"]').click();
-    });
+    };
 
-    // ===== SAVE & RENDER CART =====
     function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); }
 
     function renderCart() {
       const list = document.getElementById('cart-list');
       const empty = document.getElementById('empty-cart');
       const saveBtn = document.getElementById('save-trip-btn');
-
       list.querySelectorAll('.cart-item').forEach(el => el.remove());
 
-      if (cart.length === 0) {
-        empty.style.display = 'block';
-        saveBtn.style.display = 'none';
-      } else {
-        empty.style.display = 'none';
-        saveBtn.style.display = 'block';
+      if (cart.length === 0) { empty.style.display = 'block'; saveBtn.style.display = 'none'; }
+      else {
+        empty.style.display = 'none'; saveBtn.style.display = 'block';
         cart.forEach((item, index) => {
-          const total = item.unitPrice * item.quantity;
           const div = document.createElement('div');
           div.className = 'cart-item';
           div.innerHTML = `
@@ -469,19 +341,13 @@
               <div class="name">${item.name}</div>
               <div class="detail">[${item.store}] [${item.category}] ${formatPrice(item.unitPrice)} × ${item.quantity}</div>
             </div>
-            <span class="total-price">${formatPrice(total)}</span>
+            <span class="total-price">${formatPrice(item.unitPrice * item.quantity)}</span>
             <button class="del-btn" data-index="${index}">✕</button>
           `;
           list.appendChild(div);
         });
-
         list.querySelectorAll('.del-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const idx = parseInt(btn.dataset.index);
-            cart.splice(idx, 1);
-            saveCart();
-            renderCart();
-          });
+          btn.onclick = () => { cart.splice(parseInt(btn.dataset.index), 1); saveCart(); renderCart(); };
         });
       }
       updateBudget();
@@ -491,59 +357,36 @@
       const totalSpent = cart.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
       const remaining = budget - totalSpent;
       const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
-
       const remainEl = document.getElementById('remaining-amount');
       remainEl.textContent = formatPrice(remaining);
       remainEl.classList.toggle('negative', remaining < 0);
-
       document.getElementById('spent-label').textContent = `Spent: ${formatPrice(totalSpent)} · ${totalItems} items`;
-
       const pct = Math.min(100, (totalSpent / budget) * 100);
       const fill = document.getElementById('budget-fill');
       fill.style.width = pct + '%';
       fill.classList.toggle('over', totalSpent > budget);
-
       document.getElementById('warn-msg').classList.toggle('show', remaining < 0);
     }
 
-    // ===== SAVE HISTORY =====
-    document.getElementById('save-trip-btn').addEventListener('click', () => {
+    // SAVE HISTORY
+    document.getElementById('save-trip-btn').onclick = () => {
       if (cart.length === 0) return;
-      
       const total = cart.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
       const date = new Date().toLocaleString('en-GB');
-      
       let details = cart.map(i => `- [${i.store}] ${i.name} (${i.category}): ${i.quantity} x ${formatPrice(i.unitPrice)}`).join('\n');
-      
-      history.unshift({ 
-        date: date, 
-        total: total, 
-        items: cart.length, 
-        details: details,
-        rawData: [...cart] 
-      });
-      
+      history.unshift({ date, total, items: cart.length, details, rawData: [...cart] });
       localStorage.setItem('history', JSON.stringify(history));
-      
-      cart = [];
-      saveCart();
-      renderCart();
-      renderHistory();
-      
+      cart = []; saveCart(); renderCart(); renderHistory();
       alert('Trip saved to history!');
       document.querySelector('.tab-btn[data-tab="history"]').click();
-    });
+    };
 
-    // ===== RENDER HISTORY =====
     function renderHistory() {
       const list = document.getElementById('history-list');
       const empty = document.getElementById('empty-history');
-      
       list.querySelectorAll('.history-item').forEach(el => el.remove());
-      
-      if (history.length === 0) {
-        empty.style.display = 'block';
-      } else {
+      if (history.length === 0) empty.style.display = 'block';
+      else {
         empty.style.display = 'none';
         history.forEach((item, index) => {
           const div = document.createElement('div');
@@ -560,63 +403,81 @@
           `;
           list.appendChild(div);
         });
-
         list.querySelectorAll('.history-del-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const idx = parseInt(btn.dataset.index);
-            if (confirm("Are you sure you want to delete this purchase history? This cannot be undone.")) {
-              history.splice(idx, 1);
+          btn.onclick = () => {
+            if (confirm("Are you sure you want to delete this purchase history?")) {
+              history.splice(parseInt(btn.dataset.index), 1);
               localStorage.setItem('history', JSON.stringify(history));
               renderHistory();
-              if(document.getElementById('tab-stats').classList.contains('active')){
-                renderStats();
-              }
+              if (document.getElementById('tab-stats').classList.contains('active')) renderStats();
             }
-          });
+          };
         });
       }
     }
 
-    // ===== RENDER STATS =====
     function renderStats() {
       const container = document.getElementById('stats-container');
-      
       let allPurchases = [];
-      history.forEach(trip => {
-        if (trip.rawData) {
-          allPurchases.push(...trip.rawData);
-        }
-      });
-
-      if (allPurchases.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding: 20px; color:#9ca3af;">No data available. Go shopping and "Save Trip" first.</div>';
-        return;
-      }
-
+      history.forEach(trip => { if (trip.rawData) allPurchases.push(...trip.rawData); });
+      if (allPurchases.length === 0) return container.innerHTML = '<div style="text-align:center; padding: 20px; color:#9ca3af;">No data available.</div>';
       const categoryData = {};
-      
       allPurchases.forEach(item => {
-        const cat = item.category || 'Other';
-        const store = item.store || 'Other';
-        const price = item.unitPrice;
-
+        const cat = item.category || 'Other', store = item.store || 'Other';
         if (!categoryData[cat]) categoryData[cat] = {};
         if (!categoryData[cat][store]) categoryData[cat][store] = [];
-        
-        categoryData[cat][store].push(price);
+        categoryData[cat][store].push(item.unitPrice);
       });
-
       const allStores = [...new Set(allPurchases.map(i => i.store || 'Other'))].sort();
-
       let html = '<table class="stats-table"><thead><tr><th>Category</th>';
-      allStores.forEach(store => {
-        html += `<th>${store}</th>`;
-      });
+      allStores.forEach(store => html += `<th>${store}</th>`);
       html += '</tr></thead><tbody>';
-
       for (const cat in categoryData) {
         html += `<tr><td style="font-weight:700;">${cat}</td>`;
-        
-        let minAveragePrice = Infinity;
-        const storeAverages = {};
-       
+        let minAvg = Infinity, storeAvgs = {};
+        for (const store in categoryData[cat]) {
+          const prices = categoryData[cat][store];
+          const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+          storeAvgs[store] = avg;
+          if (avg < minAvg) minAvg = avg;
+        }
+        allStores.forEach(store => {
+          if (storeAvgs[store] !== undefined) {
+            const isBest = Math.abs(storeAvgs[store] - minAvg) < 0.001; 
+            html += `<td class="${isBest ? 'best-price' : ''}">${formatPrice(storeAvgs[store])}</td>`;
+          } else html += `<td class="no-data">-</td>`;
+        });
+        html += '</tr>';
+      }
+      container.innerHTML = html + '</tbody></table>';
+    }
+
+    // SERVICE WORKER & ICON
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js').then(reg => {
+        reg.update();
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              const banner = document.getElementById('update-banner');
+              banner.classList.add('show');
+              banner.onclick = () => { newWorker.postMessage({ type: 'SKIP_WAITING' }); window.location.reload(); };
+            }
+          });
+        });
+      }).catch(() => {});
+    }
+
+    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#0f766e"/><path d="M160 160h192l-16 160H176z" fill="none" stroke="#ffffff" stroke-width="32" stroke-linejoin="round"/><path d="M144 112h32l24 48" fill="none" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/><circle cx="208" cy="368" r="24" fill="#ffffff"/><circle cx="336" cy="368" r="24" fill="#ffffff"/></svg>`;
+    document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(new Blob([JSON.stringify({
+      name: "Smart Shopping AI", short_name: "SmartShop", start_url: "/", display: "standalone",
+      background_color: "#0f766e", theme_color: "#0f766e",
+      icons: [{ src: "data:image/svg+xml;base64," + btoa(iconSvg), sizes: "512x512", type: "image/svg+xml" }]
+    })], {type: 'application/json'}));
+
+    renderCart();
+    renderHistory();
+  </script>
+</body>
+</html>
