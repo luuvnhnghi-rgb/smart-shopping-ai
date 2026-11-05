@@ -475,13 +475,7 @@
       }).catch(() => {});
     }
 
-    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#0f766e"/><path d="M160 160h192l-16 160H176z" fill="none" stroke="#ffffff" stroke-width="32" stroke-linejoin="round"/><path d="M144 112h32l24 48" fill="none" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/><circle cx="208" cy="368" r="24" fill="#ffffff"/><circle cx="336" cy="368" r="24" fill="#ffffff"/></svg>`;
-    document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(new Blob([JSON.stringify({
-      name: "Smart Shopping AI", short_name: "SmartShop", start_url: "/", display: "standalone",
-      background_color: "#0f766e", theme_color: "#0f766e",
-      icons: [{ src: "data:image/svg+xml;base64," + btoa(iconSvg), sizes: "512x512", type: "image/svg+xml" }]
-    })], {type: 'application/json'}));
-
+        const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0f766e"/><g transform="translate(-20, 10) scale(0.8)"><path d="M80 80h50l50 240h240l40-160H160" fill="none" stroke="#ffffff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/><circle cx="240" cy="380" r="40" fill="#ffffff"/><circle cx="400" cy="380" r="40" fill="#ffffff"/></g></svg>`;
     renderCart();
     renderHistory();
   </script>
