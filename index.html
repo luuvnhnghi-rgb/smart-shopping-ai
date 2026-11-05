@@ -75,14 +75,18 @@
     /* MODAL */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
     .modal-overlay.show { display: flex; }
-    .modal-content { background: #fff; width: 100%; max-width: 350px; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal-content { background: #fff; width: 100%; max-width: 380px; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;}
     .modal-title { font-size: 1.1rem; font-weight: 700; color: #0f766e; margin-bottom: 16px; text-align: center; }
     .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
     .modal-grid button { padding: 12px; background: #f0fdfa; border: 2px solid #ccfbf1; border-radius: 12px; font-weight: 600; color: #0f766e; cursor: pointer; font-size: 0.95rem; }
     .modal-grid button.selected-opt { background: #99f6e4; border-color: #14b8a6; }
-    .modal-qty-label { font-size: 0.9rem; color: #4b5563; margin-bottom: 6px; font-weight: 600; display: block; }
-    .modal-qty-input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 12px; margin-bottom: 16px; font-size: 1rem; outline: none;}
-    .modal-btns { display: flex; gap: 10px; }
+    
+    .modal-input-group { margin-bottom: 12px; }
+    .modal-input-group label { display: block; font-size: 0.9rem; color: #4b5563; margin-bottom: 6px; font-weight: 600; }
+    .modal-input-group input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; outline: none;}
+    .modal-input-group input:focus { border-color: #14b8a6; }
+
+    .modal-btns { display: flex; gap: 10px; margin-top: 16px; }
     .modal-btns button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; }
     .modal-cancel { background: #f3f4f6; color: #4b5563; }
     .modal-confirm { background: #0f766e; color: #fff; }
@@ -155,8 +159,8 @@
           <button class="category-btn" data-cat="Fish">🐟 Fish</button>
           <button class="category-btn" data-cat="Eggs">🥚 Eggs</button>
           <button class="category-btn" data-cat="Vegetables">🥬 Vegetables</button>
-          <button class="category-btn" data-cat="Soft Drinks">🥤 Soft Drinks</button>
-          <button class="category-btn" data-cat="Dairy">🥛 Dairy</button>
+          <button class="category-btn" data-cat="Cola">🥤 Cola</button>
+          <button class="category-btn" data-cat="Milk">🥛 Milk</button>
           <button class="category-btn" data-cat="Spices">🧂 Spices</button>
           <button class="category-btn" data-cat="Other" style="grid-column: span 2;">🛒 Other (Custom)</button>
         </div>
@@ -181,12 +185,31 @@
   </div>
 
   <!-- POPUP MODAL -->
-  <div class="modal-overlay" id="meat-modal">
+  <div class="modal-overlay" id="custom-modal">
     <div class="modal-content">
       <div class="modal-title" id="modal-title">Select Detail</div>
-      <div class="modal-grid" id="modal-options"></div>
-      <label class="modal-qty-label">Số lượng (Optional)</label>
-      <input type="number" id="modal-qty" class="modal-qty-input" min="1" placeholder="Mặc định là 1">
+      
+      <!-- Nút gợi ý (dành cho Gia vị) -->
+      <div class="modal-grid" id="modal-options" style="display: none;"></div>
+      
+      <!-- Ô nhập tên (dành cho Rau, Cá, Gia vị) -->
+      <div class="modal-input-group" id="modal-name-group" style="display: none;">
+        <label id="modal-name-label">Name</label>
+        <input type="text" id="modal-name-input" placeholder="Enter name...">
+      </div>
+
+      <!-- Ô nhập Đơn giá -->
+      <div class="modal-input-group">
+        <label>Unit Price (€)</label>
+        <input type="text" id="modal-price" inputmode="decimal" placeholder="e.g. 2,49">
+      </div>
+
+      <!-- Ô nhập Số lượng optional -->
+      <div class="modal-input-group">
+        <label>Số lượng (Optional)</label>
+        <input type="number" id="modal-qty" min="1" placeholder="Mặc định là 1">
+      </div>
+
       <div class="modal-btns">
         <button class="modal-cancel" id="modal-cancel-btn">Cancel</button>
         <button class="modal-confirm" id="modal-confirm-btn">Confirm</button>
@@ -248,44 +271,106 @@
     const catBtns = document.querySelectorAll('.category-btn');
     const pNameInput = document.getElementById('p-name');
     const pQtyInput = document.getElementById('p-qty');
-    const meatModal = document.getElementById('meat-modal');
+    const modal = document.getElementById('custom-modal');
     const modalOptions = document.getElementById('modal-options');
-    
-    const meatOptions = {
-      'Beef': ['Thịt bằm', 'Thịt mảng steak'],
-      'Pork': ['Thịt bằm', 'Thịt mảng steak'],
-      'Chicken': ['Cánh gà', 'Đùi gà', 'Ức gà']
-    };
+    const modalNameGroup = document.getElementById('modal-name-group');
+    const modalNameInput = document.getElementById('modal-name-input');
+    const modalPrice = document.getElementById('modal-price');
+    const modalQty = document.getElementById('modal-qty');
 
-    function showMeatModal(cat) {
-      document.getElementById('modal-title').textContent = `Select ${cat} Detail`;
-      modalOptions.innerHTML = ''; selectedDetail = '';
-      meatOptions[cat].forEach(opt => {
-        const btn = document.createElement('button');
-        btn.textContent = opt;
-        btn.onclick = () => {
-          modalOptions.querySelectorAll('button').forEach(b => b.classList.remove('selected-opt'));
-          btn.classList.add('selected-opt'); selectedDetail = opt;
-        };
-        modalOptions.appendChild(btn);
-      });
-      document.getElementById('modal-qty').value = ''; 
-      meatModal.classList.add('show');
+    const spiceOptions = ['Sugar', 'Salt', 'Pepper', 'Chillies', 'Soy Sauce', 'Hot Chilli Sauce'];
+
+    function openModal(cat) {
+      modalTitle.textContent = `Add ${cat} Detail`;
+      modalOptions.innerHTML = '';
+      modalOptions.style.display = 'none';
+      modalNameGroup.style.display = 'none';
+      modalNameInput.value = '';
+      modalPrice.value = '';
+      modalQty.value = '';
+      selectedDetail = '';
+
+      if (cat === 'Beef' || cat === 'Pork') {
+        modalOptions.style.display = 'grid';
+        ['Thịt bằm', 'Thịt mảng steak'].forEach(opt => {
+          const btn = document.createElement('button');
+          btn.textContent = opt;
+          btn.onclick = () => {
+            modalOptions.querySelectorAll('button').forEach(b => b.classList.remove('selected-opt'));
+            btn.classList.add('selected-opt'); selectedDetail = opt;
+          };
+          modalOptions.appendChild(btn);
+        });
+      } else if (cat === 'Chicken') {
+        modalOptions.style.display = 'grid';
+        ['Cánh gà', 'Đùi gà', 'Ức gà'].forEach(opt => {
+          const btn = document.createElement('button');
+          btn.textContent = opt;
+          btn.onclick = () => {
+            modalOptions.querySelectorAll('button').forEach(b => b.classList.remove('selected-opt'));
+            btn.classList.add('selected-opt'); selectedDetail = opt;
+          };
+          modalOptions.appendChild(btn);
+        });
+      } else if (cat === 'Spices') {
+        modalOptions.style.display = 'grid';
+        spiceOptions.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.textContent = opt;
+          btn.onclick = () => {
+            modalOptions.querySelectorAll('button').forEach(b => b.classList.remove('selected-opt'));
+            btn.classList.add('selected-opt'); 
+            selectedDetail = opt;
+            modalNameInput.value = opt; // Tự điền vào ô nhập
+          };
+          modalOptions.appendChild(btn);
+        });
+        modalNameGroup.style.display = 'block';
+        document.getElementById('modal-name-label').textContent = 'Spice Name (Edit if needed)';
+      } else if (cat === 'Vegetables') {
+        modalNameGroup.style.display = 'block';
+        document.getElementById('modal-name-label').textContent = 'Vegetable Name';
+      } else if (cat === 'Fish') {
+        modalNameGroup.style.display = 'block';
+        document.getElementById('modal-name-label').textContent = 'Fish Name';
+      }
+
+      modal.classList.add('show');
     }
 
     document.getElementById('modal-cancel-btn').onclick = () => {
-      meatModal.classList.remove('show');
+      modal.classList.remove('show');
       catBtns.forEach(b => b.classList.remove('selected'));
       currentCategory = '';
     };
 
     document.getElementById('modal-confirm-btn').onclick = () => {
-      if (!selectedDetail) return alert('Please select a detail option.');
-      pNameInput.value = `${currentCategory}: ${selectedDetail}`;
-      const qtyVal = parseInt(document.getElementById('modal-qty').value);
+      let finalName = selectedDetail;
+      const cat = currentCategory;
+
+      // Xử lý tên hiển thị
+      if (cat === 'Vegetables' || cat === 'Fish') {
+        if (!modalNameInput.value.trim()) return alert('Please enter a name.');
+        finalName = modalNameInput.value.trim();
+      } else if (cat === 'Spices') {
+        if (!modalNameInput.value.trim()) return alert('Please select or enter a spice name.');
+        finalName = modalNameInput.value.trim();
+      } else {
+        if (!selectedDetail) return alert('Please select an option.');
+      }
+
+      pNameInput.value = `${cat}: ${finalName}`;
+      
+      // Điền giá
+      if (modalPrice.value) {
+        priceInput.value = modalPrice.value;
+      }
+      
+      // Điền số lượng
+      const qtyVal = parseInt(modalQty.value);
       pQtyInput.value = (qtyVal > 0) ? qtyVal : 1;
-      meatModal.classList.remove('show');
-      pNameInput.focus(); 
+
+      modal.classList.remove('show');
     };
 
     catBtns.forEach(btn => {
@@ -295,17 +380,18 @@
         btn.classList.add('selected');
         const cat = btn.dataset.cat;
         currentCategory = cat; 
-        if (['Beef', 'Pork', 'Chicken'].includes(cat)) return showMeatModal(cat);
-        if (cat === 'Spices') {
-          const spice = prompt("Please enter the spice name:");
-          if (spice && spice.trim() !== '') pNameInput.value = "Spice: " + spice.trim();
-          else { btn.classList.remove('selected'); currentCategory = ''; pNameInput.value = ""; }
-        } else if (cat === 'Other') { pNameInput.value = ""; pNameInput.focus(); }
+
+        if (['Beef', 'Chicken', 'Pork', 'Fish', 'Vegetables', 'Spices'].includes(cat)) {
+          openModal(cat);
+          return;
+        }
+        
+        if (cat === 'Other') { pNameInput.value = ""; pNameInput.focus(); }
         else pNameInput.value = cat;
       };
     });
 
-    // ADD TO CART
+    // ADD TO CART (Từ form chính)
     document.getElementById('add-btn').onclick = () => {
       const store = document.getElementById('store-select').value;
       const name = pNameInput.value.trim();
@@ -317,6 +403,8 @@
 
       cart.push({ store, name, category: currentCategory, unitPrice: price, quantity: qty });
       saveCart(); renderCart();
+      
+      // Reset form
       pNameInput.value = ''; priceInput.value = ''; pQtyInput.value = '1';
       catBtns.forEach(b => b.classList.remove('selected')); currentCategory = '';
       document.querySelector('.tab-btn[data-tab="cart"]').click();
@@ -428,56 +516,4 @@
         if (!categoryData[cat][store]) categoryData[cat][store] = [];
         categoryData[cat][store].push(item.unitPrice);
       });
-      const allStores = [...new Set(allPurchases.map(i => i.store || 'Other'))].sort();
-      let html = '<table class="stats-table"><thead><tr><th>Category</th>';
-      allStores.forEach(store => html += `<th>${store}</th>`);
-      html += '</tr></thead><tbody>';
-      for (const cat in categoryData) {
-        html += `<tr><td style="font-weight:700;">${cat}</td>`;
-        let minAvg = Infinity, storeAvgs = {};
-        for (const store in categoryData[cat]) {
-          const prices = categoryData[cat][store];
-          const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
-          storeAvgs[store] = avg;
-          if (avg < minAvg) minAvg = avg;
-        }
-        allStores.forEach(store => {
-          if (storeAvgs[store] !== undefined) {
-            const isBest = Math.abs(storeAvgs[store] - minAvg) < 0.001; 
-            html += `<td class="${isBest ? 'best-price' : ''}">${formatPrice(storeAvgs[store])}</td>`;
-          } else html += `<td class="no-data">-</td>`;
-        });
-        html += '</tr>';
-      }
-      container.innerHTML = html + '</tbody></table>';
-    }
-
-    // SERVICE WORKER & ICON
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js').then(reg => {
-        reg.update();
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              const banner = document.getElementById('update-banner');
-              banner.classList.add('show');
-              banner.onclick = () => { newWorker.postMessage({ type: 'SKIP_WAITING' }); window.location.reload(); };
-            }
-          });
-        });
-      }).catch(() => {});
-    }
-
-    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#0f766e"/><path d="M160 160h192l-16 160H176z" fill="none" stroke="#ffffff" stroke-width="32" stroke-linejoin="round"/><path d="M144 112h32l24 48" fill="none" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/><circle cx="208" cy="368" r="24" fill="#ffffff"/><circle cx="336" cy="368" r="24" fill="#ffffff"/></svg>`;
-    document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(new Blob([JSON.stringify({
-      name: "Smart Shopping AI", short_name: "SmartShop", start_url: "/", display: "standalone",
-      background_color: "#0f766e", theme_color: "#0f766e",
-      icons: [{ src: "data:image/svg+xml;base64," + btoa(iconSvg), sizes: "512x512", type: "image/svg+xml" }]
-    })], {type: 'application/json'}));
-
-    renderCart();
-    renderHistory();
-  </script>
-</body>
-</html>
+      const allStores = [...new Set(allPurchases.map(i => i
