@@ -6,18 +6,17 @@
   <title>Smart Shopping AI</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0f766e">
-  <!-- Thư viện đọc chữ từ ảnh (OCR) -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     
-    /* ĐẨY TOÀN BỘ APP XUỐNG ĐỂ TRÁNH LOGO NETLIFY */
+    /* ĐẨY TOÀN BỘ APP CAO LÊN ĐỂ TRÁNH LOGO NETLIFY & THANH VUỐT IPHONE */
     body { 
       background: #f0fdfa; 
       min-height: 100vh; 
-      padding-top: 60px; /* Khoảng trống trên cùng */
-      padding-bottom: 100px; /* Khoảng trống dưới cùng tránh thanh vuốt iPhone */
+      padding-top: 90px; /* Đẩy cao lên */
+      padding-bottom: 130px; /* Đẩy cao lên */
     }
 
     /* ===== SPLASH SCREEN ===== */
@@ -95,12 +94,14 @@
       display: flex; align-items: center; justify-content: center; gap: 8px;
     }
     .camera-btn:active { background: #2563eb; }
-    #ocr-status { display: none; text-align: center; color: #6b7280; font-size: 0.9rem; margin-bottom: 16px; }
+    .camera-btn:disabled { background: #9ca3af; }
+    #ocr-status { display: none; text-align: center; color: #6b7280; font-size: 0.9rem; margin-bottom: 16px; font-weight: 600; }
     
     /* ===== TABS ===== */
     .tab-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
-      display: flex; border-top: 1px solid #e5e7eb; padding-bottom: 20px; /* Thêm đệm dưới cho iPhone */
+      position: fixed; bottom: 20px; left: 0; right: 0; background: #fff; /* Nhấc thanh tab lên khỏi đáy 20px */
+      display: flex; border-top: 1px solid #e5e7eb; padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     }
     .tab-btn {
       flex: 1; padding: 12px 4px; background: none; border: none; font-size: 0.75rem;
@@ -234,7 +235,11 @@
     const cameraInput = document.getElementById('camera-input');
     const ocrStatus = document.getElementById('ocr-status');
 
-    cameraBtn.addEventListener('click', () => cameraInput.click());
+    cameraBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Thêm độ trễ nhỏ để điện thoại kịp phản hồi
+      setTimeout(() => cameraInput.click(), 100);
+    });
 
     cameraInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
@@ -242,44 +247,80 @@
 
       ocrStatus.style.display = 'block';
       ocrStatus.textContent = 'Đang phân tích ảnh...';
+      ocrStatus.style.color = '#6b7280';
       cameraBtn.disabled = true;
 
       try {
+        // Sử dụng blocks để lấy thông tin kích thước chữ (font size)
         const result = await Tesseract.recognize(file, 'deu', {
           logger: m => { if(m.status === 'recognizing text') ocrStatus.textContent = 'Đang đọc chữ: ' + Math.round(m.progress * 100) + '%'; }
         });
         
         const text = result.data.text;
-        const extracted = extractProduct(text);
+        const blocks = result.data.blocks;
+        
+        const extracted = extractProduct(text, blocks);
 
         if (extracted.productName) document.getElementById('p-name').value = extracted.productName;
-        if (extracted.salePrice > 0) priceInput.value = extracted.salePrice.toFixed(2).replace('.', ',');
         
-        ocrStatus.textContent = '✅ Đã tự động điền thông tin!';
-        setTimeout(() => { ocrStatus.style.display = 'none'; }, 2000);
+        if (extracted.salePrice > 0) {
+          priceInput.value = extracted.salePrice.toFixed(2).replace('.', ',');
+          ocrStatus.textContent = '✅ Đã tự động điền giá to nhất trên nhãn!';
+          ocrStatus.style.color = '#16a34a';
+        } else {
+          ocrStatus.textContent = '⚠️ Đã điền tên, nhưng không tìm thấy giá. Vui lòng nhập tay.';
+          ocrStatus.style.color = '#d97706';
+        }
+        
+        setTimeout(() => { ocrStatus.style.display = 'none'; }, 4000);
 
       } catch (err) {
         ocrStatus.textContent = '❌ Không thể đọc ảnh. Vui lòng thử lại hoặc nhập tay.';
+        ocrStatus.style.color = '#dc2626';
       } finally {
         cameraBtn.disabled = false;
         cameraInput.value = ''; // Reset để có thể chụp lại
       }
     });
 
-    function extractProduct(ocrText) {
+    function extractProduct(ocrText, blocks) {
       const lines = ocrText.split('\n').map(l => l.trim()).filter(Boolean);
 
-      // 1. Tìm giá
-      const pricePatterns = [ /(\d+[.,]\d{2})\s*€/g, /€\s*(\d+[.,]\d{2})/g, /(\d+[.,]\d{2})\s*EUR/gi, /(?:^|\s)(\d+[.,]\d{2})(?=\s|$)/g ];
-      let prices = [];
-      for (const p of pricePatterns) {
-        const m = [...ocrText.matchAll(p)];
-        prices.push(...m.map(x => parsePrice(x[1])));
+      // 1. TÌM GIÁ TO NHẤT TRÊN NHÃN
+      let salePrice = 0;
+      
+      // Quét qua các khối (blocks) để tìm khối có chứa số và ký hiệu tiền tệ, chọn khối có diện tích lớn nhất
+      let maxArea = 0;
+      if (blocks && blocks.length > 0) {
+        blocks.forEach(block => {
+          const blockText = block.text;
+          // Tìm các số có định dạng giá (VD: 2,49 hoặc 2.49)
+          const priceMatches = blockText.match(/\d+[.,]\d{2}/g);
+          if (priceMatches) {
+            // Diện tích khối (dùng chiều cao của chữ làm thước đo)
+            const area = (block.bbox.y1 - block.bbox.y0); 
+            if (area > maxArea) {
+              maxArea = area;
+              // Lấy số đầu tiên tìm thấy trong khối này
+              salePrice = parsePrice(priceMatches[0]);
+            }
+          }
+        });
       }
-      const validPrices = prices.filter(p => p > 0 && p < 1000);
-      const salePrice = validPrices.length ? Math.min(...validPrices) : 0;
 
-      // 2. Tìm tên
+      // Fallback nếu không dùng được blocks (dùng regex thông thường)
+      if (salePrice === 0) {
+        const pricePatterns = [ /(\d+[.,]\d{2})\s*€/g, /€\s*(\d+[.,]\d{2})/g ];
+        let prices = [];
+        for (const p of pricePatterns) {
+          const m = [...ocrText.matchAll(p)];
+          prices.push(...m.map(x => parsePrice(x[1])));
+        }
+        const validPrices = prices.filter(p => p > 0 && p < 1000);
+        salePrice = validPrices.length ? Math.min(...validPrices) : 0;
+      }
+
+      // 2. Tìm tên sản phẩm
       const unitWords = /^(€|EUR|kg|g|ml|l|stk|stück|angebot|aktion|rabatt|statt|uvp)/i;
       const nameCandidates = lines.filter(l =>
         /[A-Za-zÄÖÜäöüß]{3,}/.test(l) && !unitWords.test(l) && !/^\d+[.,]?\d*\s*€?$/.test(l) && l.length > 3
