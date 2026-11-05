@@ -6,6 +6,7 @@
   <title>Smart Shopping AI</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0f766e">
+  <link rel="apple-touch-icon" href="/logo.png"> <!-- Cần thiết cho iPhone -->
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
@@ -14,23 +15,21 @@
     /* SPLASH */
     #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f766e, #14b8a6); color: #fff; text-align: center; padding: 2rem; transition: opacity 0.5s ease, visibility 0.5s ease; }
     #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-    #splash .logo { width: 100px; height: 100px; background: #fff; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1.5rem; }
+    
+    /* LOGO TRONG SPLASH */
+    #splash .logo { width: 120px; height: 120px; background: transparent; border-radius: 24px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
+    #splash .logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    
     #splash h1 { font-size: 1.7rem; margin-bottom: 0.5rem; line-height: 1.3; }
     #splash p { font-size: 1rem; opacity: 0.85; margin-bottom: 2rem; }
     #splash button { background: #fff; color: #0f766e; border: none; padding: 14px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; }
-    
-    /* CREATOR TEXT (Đã đưa lên trên cùng) */
     #splash .creator { position: absolute; top: 60px; font-size: 0.9rem; opacity: 0.8; letter-spacing: 1px; font-weight: 400; }
 
-    /* BANNER */
+    /* CÁC PHẦN CSS KHÁC GIỮ NGUYÊN */
     #update-banner { display: none; background: #fbbf24; color: #78350f; padding: 12px; text-align: center; font-weight: 600; cursor: pointer; position: sticky; top: 0; z-index: 100; }
     #update-banner.show { display: block; }
-
-    /* TOAST NOTIFICATION */
     #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 3000; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(10px); }
-
-    /* BUDGET */
     .budget-card { background: #fff; margin: 16px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .remaining-block { text-align: center; margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; }
     .remaining-label { font-size: 0.85rem; color: #6b7280; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
@@ -44,8 +43,6 @@
     .budget-fill.over { background: #dc2626; }
     .warn-msg { display: none; font-size: 0.85rem; color: #dc2626; text-align: center; margin-top: 8px; }
     .warn-msg.show { display: block; }
-
-    /* CART & HISTORY */
     .section-title { padding: 0 16px; margin: 24px 0 12px; font-size: 1.1rem; font-weight: 700; color: #134e4a; display: flex; justify-content: space-between; align-items: center;}
     .cart-list { margin: 0 16px; }
     .cart-item { background: #fff; padding: 14px 16px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
@@ -64,21 +61,15 @@
     .history-price { color: #0f766e; font-size: 1.1rem;}
     .history-del-btn { background: #fee2e2; color: #dc2626; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-left: 12px; font-size: 0.8rem; }
     .history-detail { font-size: 0.85rem; color: #6b7280; white-space: pre-wrap; }
-
-    /* FORM */
     .form-card { background: #fff; margin: 16px; padding: 20px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
     .form-group input, .form-group select { width: 100%; padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; outline: none; background: #fff; }
     .form-group input:focus, .form-group select:focus { border-color: #14b8a6; }
     .btn-primary { width: 100%; padding: 16px; background: #0f766e; color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 8px; }
-
-    /* CATEGORY */
     .category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
     .category-btn { background: #f3f4f6; border: 2px solid transparent; padding: 12px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; color: #374151; cursor: pointer; text-align: center; }
     .category-btn.selected { background: #ccfbf1; border-color: #14b8a6; color: #0f766e; }
-
-    /* MODAL */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
     .modal-overlay.show { display: flex; }
     .modal-content { background: #fff; width: 100%; max-width: 380px; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;}
@@ -94,24 +85,15 @@
     .modal-btns button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; }
     .modal-cancel { background: #f3f4f6; color: #4b5563; }
     .modal-confirm { background: #0f766e; color: #fff; }
-
-    /* STATS */
     .stats-card { background: #fff; margin: 16px; padding: 16px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow-x: auto; }
     .stats-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 400px; }
     .stats-table th, .stats-table td { padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 0.9rem; }
     .stats-table th { background: #f9fafb; color: #4b5563; font-weight: 700; }
     .stats-table td.best-price { background: #dcfce7; color: #166534; font-weight: 700; border-radius: 6px; }
     .stats-table td.no-data { color: #9ca3af; font-style: italic; }
-
-    /* TABS (Hạ thấp & Full trắng đáy) */
-    .tab-bar { 
-      position: fixed; bottom: 0; left: 0; right: 0; background: #fff; 
-      display: flex; border-top: 1px solid #e5e7eb; 
-      padding-bottom: calc(30px + env(safe-area-inset-bottom)); /* Kéo dài trắng xuống đáy */
-      box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000;
-    }
+    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: calc(30px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; }
     .tab-btn { flex: 1; padding: 12px 4px 16px 4px; background: none; border: none; font-size: 0.75rem; color: #9ca3af; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .tab-btn .icon { font-size: 1.8rem; } /* Tăng kích thước icon */
+    .tab-btn .icon { font-size: 1.8rem; }
     .tab-btn.active { color: #0f766e; font-weight: 600; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -119,9 +101,10 @@
 </head>
 <body>
 
+  <!-- SPLASH ĐÃ ĐƯỢC CẬP NHẬT LOGO -->
   <div id="splash">
     <div class="creator">Created by Kai Luu for Ngoc Huynh</div>
-    <div class="logo">🛒</div>
+    <div class="logo"><img src="/logo.png" alt="Logo"></div>
     <h1>Welcome to your<br>Smart Shopping AI</h1>
     <p>Smart shopping budget assistant</p>
     <button id="splash-btn">Get Started</button>
@@ -474,7 +457,20 @@
         });
       }).catch(() => {});
     }
-const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0f766e"/><g transform="translate(-25, 5) scale(0.75)"><path d="M80 80h50l50 240h240l40-160H160" fill="none" stroke="#ffffff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/><circle cx="240" cy="380" r="40" fill="#ffffff"/><circle cx="400" cy="380" r="40" fill="#ffffff"/></g></svg>`;
+
+    // CẬP NHẬT ICON LẤY TỪ FILE ẢNH LOGO.PNG
+    const manifestData = {
+      name: "Smart Shopping AI", 
+      short_name: "SmartShop", 
+      start_url: "/", 
+      display: "standalone",
+      background_color: "#0f766e", 
+      theme_color: "#0f766e",
+      icons: [{ src: "/logo.png", sizes: "512x512", type: "image/png" }]
+    };
+    
+    document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(new Blob([JSON.stringify(manifestData)], {type: 'application/json'}));
+
     renderCart();
     renderHistory();
   </script>
