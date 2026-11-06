@@ -9,7 +9,7 @@
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background: #f0fdfa; min-height: 100vh; padding-top: 90px; padding-bottom: 160px; }
+    body { background: #f0fdfa; min-height: 100vh; padding-top: 90px; padding-bottom: 180px; }
 
     /* SPLASH */
     #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f766e, #14b8a6); color: #fff; text-align: center; padding: 2rem; padding-top: env(safe-area-inset-top); transition: opacity 0.5s ease, visibility 0.5s ease; }
@@ -146,9 +146,9 @@
     .custom-ing-row button { padding: 0 16px; background: #0f766e; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
     /* TABS */
-    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: calc(15px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; border-radius: 20px 20px 0 0; height: 75px; }
-    .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; font-size: 0.7rem; color: #9ca3af; cursor: pointer; gap: 2px; }
-    .tab-btn .icon { font-size: 1.8rem; }
+    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; border-radius: 20px 20px 0 0; height: 120px; }
+    .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; font-size: 0.75rem; color: #9ca3af; cursor: pointer; gap: 4px; padding-bottom: 20px;}
+    .tab-btn .icon { font-size: 2rem; }
     .tab-btn.active { color: #0f766e; font-weight: 600; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -181,24 +181,13 @@
     
     <!-- DANH SÁCH MUA LẺ -->
     <div class="section-title">
-      <span>🧺 Shopping Cart</span>
+      <span>🛒 Shopping Cart</span>
       <button class="btn-save-trip" id="save-trip-btn" style="display: none;">Save Trip</button>
     </div>
     <div class="cart-list" id="cart-list">
       <div class="empty-cart" id="empty-cart">
-        <div class="icon">🧺</div><p>Your cart is empty</p>
+        <div class="icon">🛒</div><p>Your cart is empty</p>
       </div>
-    </div>
-
-    <!-- DANH SÁCH MÓN ĂN ĐÃ CHỌN -->
-    <div class="section-title">
-      <span>🍽️ Cooked Menu</span>
-    </div>
-    <div style="margin: 0 16px 24px;">
-      <div id="cart-menu-list" style="background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); overflow: hidden;">
-        <!-- Sẽ được render tự động -->
-      </div>
-      <button class="btn-primary" style="margin-top: 12px; background: #dc2626;" id="clear-cart-menu-btn">Clear Cooked Menu</button>
     </div>
   </div>
 
@@ -236,6 +225,17 @@
     <div class="section-title">🍽️ Recipe Menu</div>
     <div class="menu-grid" id="menu-grid">
       <!-- Được tạo tự động bởi JS -->
+    </div>
+
+    <!-- CHUYỂN COOKED MENU SANG ĐÂY -->
+    <div class="section-title">
+      <span>🍲 Cooked Menu</span>
+    </div>
+    <div style="margin: 0 16px 24px;">
+      <div id="cart-menu-list" style="background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); overflow: hidden;">
+        <!-- Render tự động -->
+      </div>
+      <button class="btn-primary" style="margin-top: 12px; background: #dc2626;" id="clear-cart-menu-btn">Clear Cooked Menu</button>
     </div>
 
     <div class="section-title">📋 Shopping List</div>
@@ -336,7 +336,7 @@
 
   <!-- TAB BAR -->
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="cart"><span class="icon">🧺</span>Cart</button>
+    <button class="tab-btn active" data-tab="cart"><span class="icon">🛒</span>Cart</button>
     <button class="tab-btn" data-tab="menu"><span class="icon">🍽️</span>Menu</button>
     <button class="tab-btn" data-tab="add"><span class="icon">➕</span>Add</button>
     <button class="tab-btn" data-tab="history"><span class="icon">📆</span>History</button>
@@ -346,12 +346,11 @@
   <script>
     // DATA & STATE
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    let cartMenu = JSON.parse(localStorage.getItem('cartMenu') || '[]'); // Lưu món ăn đã chọn
+    let cartMenu = JSON.parse(localStorage.getItem('cartMenu') || '[]'); 
     let budget = parseFloat(localStorage.getItem('budget')) || 50;
     let history = JSON.parse(localStorage.getItem('history') || '[]');
     let menuShopList = JSON.parse(localStorage.getItem('menuShopList') || '{}');
     
-    // Lưu trữ thông tin món tự tạo và nguyên liệu tự thêm
     let customDishes = JSON.parse(localStorage.getItem('customDishes') || '{}');
     let customIngredientsMap = JSON.parse(localStorage.getItem('customIngredientsMap') || '{}');
     
@@ -389,8 +388,10 @@
         btn.classList.add('active');
         document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
         if (btn.dataset.tab === 'stats') renderStats();
-        if (btn.dataset.tab === 'menu') renderMenuShoppingList();
-        if (btn.dataset.tab === 'cart') renderCartMenu();
+        if (btn.dataset.tab === 'menu') {
+          renderMenuShoppingList();
+          renderCartMenu();
+        }
       };
     });
 
@@ -551,14 +552,12 @@
         dishNameGroup.style.display = 'none';
       }
 
-      // Chỉ hiện nút xóa với món custom
       if (customDishes[dish]) {
         deleteBtn.style.display = 'flex';
       } else {
         deleteBtn.style.display = 'none';
       }
 
-      // Gộp nguyên liệu gốc và nguyên liệu đã tự thêm trước đó (nếu có)
       let baseIngredients = [];
       if (customDishes[dish]) {
         baseIngredients = [...customDishes[dish]];
@@ -608,7 +607,6 @@
       
       currentMenuIngredients[name] = 1; 
       
-      // Lưu nguyên liệu custom vào map để lần sau mở lại vẫn thấy
       if (!customIngredientsMap[currentDish]) customIngredientsMap[currentDish] = [];
       if (!customIngredientsMap[currentDish].includes(name)) {
         customIngredientsMap[currentDish].push(name);
@@ -637,14 +635,13 @@
     document.getElementById('menu-confirm-btn').onclick = () => {
       let dishName = currentDish;
       
-      // Nếu là Other, tạo món mới, KHÔNG lưu nguyên liệu gốc mà chỉ lưu custom sau này
       if (currentDish === 'Other') {
         const customName = document.getElementById('menu-dish-name').value.trim();
         if (customName) dishName = customName;
         else return alert('Please enter a dish name.');
         
         if (!customDishes[dishName]) {
-          customDishes[dishName] = []; // Khởi tạo món Other trống
+          customDishes[dishName] = []; 
           localStorage.setItem('customDishes', JSON.stringify(customDishes));
           
           dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
@@ -663,7 +660,6 @@
 
       if (!hasIngredient) return alert('Please select at least one ingredient (quantity > 0).');
 
-      // Lưu món ăn vào cartMenu
       const existingIndex = cartMenu.findIndex(m => m.name === dishName);
       if (existingIndex > -1) {
         cartMenu[existingIndex].quantity += currentMealQty;
@@ -732,7 +728,7 @@
     };
 
 
-    // ===== COOKED MENU TRONG TAB CART =====
+    // ===== COOKED MENU (Chuyển sang tab Menu) =====
     function renderCartMenu() {
       const container = document.getElementById('cart-menu-list');
       if (cartMenu.length === 0) {
