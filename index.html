@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Min Buy</title>
-  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="logo.png">
   <meta name="theme-color" content="#0f766e">
   
   <style>
@@ -672,19 +672,21 @@
     }
 
     // MANIFEST
+        // TỰ ĐỘNG TẠO MANIFEST (Chuẩn cho GitHub Pages)
     const manifestData = {
       name: "Min Buy", 
       short_name: "Min Buy", 
-      start_url: "/", 
+      start_url: "./", 
       display: "standalone",
       background_color: "#0f766e", 
       theme_color: "#0f766e",
       icons: [{ src: "logo.png", sizes: "512x512", type: "image/png" }]
     };
-    
-    document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(new Blob([JSON.stringify(manifestData)], {type: 'application/json'}));
-
-    // INIT
+    const manifestLink = document.createElement('link');
+    manifestLink.rel = 'manifest';
+    manifestLink.href = URL.createObjectURL(new Blob([JSON.stringify(manifestData)], {type: 'application/json'}));
+    document.head.appendChild(manifestLink);
+        // INIT
     renderMenuBtns();
     renderMenuShoppingList();
     renderCart();
