@@ -126,12 +126,12 @@
     .shop-list-item:last-child { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-bottom: none; }
     
     /* CUSTOM ING INPUT */
-    .custom-ing-row { display: flex; gap: 8px; margin-bottom: 12px; }
+    .custom-ing-row { display: flex; gap: 8px; margin-top: 8px; }
     .custom-ing-row input { flex: 1; padding: 8px 12px; border-radius: 8px; border: 2px solid #e5e7eb; outline: none; font-size: 0.9rem; }
     .custom-ing-row input:focus { border-color: #14b8a6; }
     .custom-ing-row button { padding: 0 16px; background: #0f766e; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
-    /* TABS (Căn giữa các icon) */
+    /* TABS */
     .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: calc(15px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; border-radius: 20px 20px 0 0; height: 75px; }
     .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; font-size: 0.7rem; color: #9ca3af; cursor: pointer; gap: 2px; }
     .tab-btn .icon { font-size: 1.8rem; }
@@ -271,7 +271,6 @@
     <div class="modal-content">
       <div class="modal-title" id="menu-modal-title">Dish Details</div>
       
-      <!-- Ô nhập tên món (chỉ hiện khi chọn Other) -->
       <div class="modal-input-group" id="menu-dish-name-group" style="display: none;">
         <label>Dish</label>
         <input type="text" id="menu-dish-name" placeholder="Enter dish name...">
@@ -291,9 +290,9 @@
         <div id="menu-ingredients" style="background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 12px;">
           <!-- Được tạo tự động -->
         </div>
-        <!-- Ô nhập nguyên liệu tự do cho món Other -->
-        <div class="custom-ing-row" id="custom-ing-row" style="display: none;">
-          <input type="text" id="custom-ing-name" placeholder="Enter custom ingredient...">
+        <!-- Ô nhập nguyên liệu tự do cho TẤT CẢ các món -->
+        <div class="custom-ing-row">
+          <input type="text" id="custom-ing-name" placeholder="Add ingredient...">
           <button id="add-custom-ing-btn">Add</button>
         </div>
       </div>
@@ -320,24 +319,28 @@
     let budget = parseFloat(localStorage.getItem('budget')) || 50;
     let history = JSON.parse(localStorage.getItem('history') || '[]');
     let menuShopList = JSON.parse(localStorage.getItem('menuShopList') || '{}');
+    // Lưu các món custom do người dùng tạo
+    let customDishes = JSON.parse(localStorage.getItem('customDishes') || '{}');
     
     let currentCategory = '', selectedDetail = '';
     let currentDish = '';
 
-    const dishPresets = {
-      "Mì Ý": ["Mì Ý", "Cà chua", "Thịt heo bằm", "Sốt cà chua", "Hành tây", "Tương ớt", "Other"],
-      "Bún thịt xào": ["Bún", "Thịt bò", "Thịt heo", "Sả", "Hành tây", "Dưa leo", "Rau sống", "Other"],
-      "Bún cà chua": ["Bún", "Cà chua", "Thịt heo bằm", "Hành lá", "Other"],
-      "Thịt xào nấm": ["Thịt heo", "Thịt bò", "Nấm", "Hành tây", "Tỏi", "Other"],
-      "Trứng chiên thịt": ["Trứng", "Thịt heo bằm", "Hành lá", "Other"],
-      "Ức gà áp chảo": ["Ức gà", "Bơ", "Tỏi", "Tiêu", "Other"],
-      "Gà kho xả": ["Thịt gà", "Sả", "Ớt", "Nước mắm", "Đường", "Other"],
-      "Gà kho gừng": ["Thịt gà", "Gừng", "Nước mắm", "Đường", "Other"],
-      "Cà ri gà": ["Thịt gà", "Khoai tây", "Cà rốt", "Bột cà ri", "Nước cốt dừa", "Other"],
-      "Gà chiên bột": ["Thịt gà", "Bột chiên", "Trứng", "Dầu ăn", "Other"],
-      "Bò xào": ["Thịt bò", "Hành tây", "Ớt chuông", "Tỏi", "Other"],
-      "Other": []
+    const defaultDishPresets = {
+      "Mì Ý": ["Mì Ý", "Cà chua", "Thịt heo bằm", "Sốt cà chua", "Hành tây", "Tương ớt"],
+      "Bún thịt xào": ["Bún", "Thịt bò", "Thịt heo", "Sả", "Hành tây", "Dưa leo", "Rau sống"],
+      "Bún cà chua": ["Bún", "Cà chua", "Thịt heo bằm", "Hành lá"],
+      "Thịt xào nấm": ["Thịt heo", "Thịt bò", "Nấm", "Hành tây", "Tỏi"],
+      "Trứng chiên thịt": ["Trứng", "Thịt heo bằm", "Hành lá"],
+      "Ức gà áp chảo": ["Ức gà", "Bơ", "Tỏi", "Tiêu"],
+      "Gà kho xả": ["Thịt gà", "Sả", "Ớt", "Nước mắm", "Đường"],
+      "Gà kho gừng": ["Thịt gà", "Gừng", "Nước mắm", "Đường"],
+      "Cà ri gà": ["Thịt gà", "Khoai tây", "Cà rốt", "Bột cà ri", "Nước cốt dừa"],
+      "Gà chiên bột": ["Thịt gà", "Bột chiên", "Trứng", "Dầu ăn"],
+      "Bò xào": ["Thịt bò", "Hành tây", "Ớt chuông", "Tỏi"]
     };
+
+    // Gộp các món có sẵn và món custom
+    const dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
 
     const parsePrice = (str) => parseFloat(str.replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
     const formatPrice = (num) => num.toFixed(2).replace('.', ',') + ' €';
@@ -394,7 +397,7 @@
       currentAddQty = 1; document.getElementById('modal-qty-val').textContent = '1';
 
       if (['Beef', 'Pork', 'Chicken'].includes(cat)) {
-        modalWeightGroup.style.display = 'block'; // Hiện ô nhập weight cho thịt
+        modalWeightGroup.style.display = 'block';
         modalOptions.style.display = 'grid';
         let opts = [];
         if (cat === 'Beef') opts = ['Thịt bằm', 'Thịt mảng steak', 'Thịt cục'];
@@ -492,7 +495,6 @@
       document.getElementById('menu-qty-val').textContent = currentMealQty;
     };
     
-    // Biến lưu trữ nguyên liệu đang chọn trong Menu
     let currentMenuIngredients = {}; 
 
     function openMenuModal(dish) {
@@ -505,21 +507,20 @@
       document.getElementById('menu-dish-name').value = '';
       
       const dishNameGroup = document.getElementById('menu-dish-name-group');
-      const customIngRow = document.getElementById('custom-ing-row');
       const ingContainer = document.getElementById('menu-ingredients');
       ingContainer.innerHTML = '';
 
       if (dish === 'Other') {
         dishNameGroup.style.display = 'block';
-        customIngRow.style.display = 'flex';
       } else {
         dishNameGroup.style.display = 'none';
-        customIngRow.style.display = 'none';
       }
 
       let ingsToRender = [...dishPresets[dish]];
-      if(dish !== 'Other') {
-        ingsToRender = ingsToRender.filter(i => i !== 'Other');
+      
+      // Nếu là món tạo từ Other, nạp lại các nguyên liệu đã lưu
+      if (customDishes[dish]) {
+        ingsToRender = [...customDishes[dish]];
       }
 
       ingsToRender.forEach(ing => {
@@ -545,7 +546,7 @@
       document.getElementById(`ing-val-${ing}`).textContent = currentMenuIngredients[ing];
     };
 
-    // Thêm nguyên liệu tự do cho món Other
+    // Thêm nguyên liệu tự do cho bất kỳ món nào
     document.getElementById('add-custom-ing-btn').onclick = () => {
       const input = document.getElementById('custom-ing-name');
       const name = input.value.trim();
@@ -554,7 +555,7 @@
         alert('Ingredient already exists!');
         return;
       }
-      currentMenuIngredients[name] = 0;
+      currentMenuIngredients[name] = 1; // Mặc định là 1 khi tự thêm
       
       const ingContainer = document.getElementById('menu-ingredients');
       const div = document.createElement('div');
@@ -563,7 +564,7 @@
         <span>${name}</span>
         <div class="ing-counter">
           <button class="ing-btn" onclick="updateIngQty('${name}', -1)">-</button>
-          <span class="ing-val" id="ing-val-${name}">0</span>
+          <span class="ing-val" id="ing-val-${name}">1</span>
           <button class="ing-btn" onclick="updateIngQty('${name}', 1)">+</button>
         </div>
       `;
@@ -577,6 +578,15 @@
         const customName = document.getElementById('menu-dish-name').value.trim();
         if (customName) dishName = customName;
         else return alert('Please enter a dish name.');
+        
+        // Lưu món Other thành một món mới trong danh sách
+        if (!customDishes[dishName]) {
+          customDishes[dishName] = Object.keys(currentMenuIngredients);
+          localStorage.setItem('customDishes', JSON.stringify(customDishes));
+          // Gộp lại và render lại nút
+          Object.assign(dishPresets, customDishes);
+          renderMenuBtns();
+        }
       }
 
       let hasIngredient = false;
@@ -584,7 +594,7 @@
         if (currentMenuIngredients[ing] > 0) {
           hasIngredient = true;
           if (!menuShopList[ing]) menuShopList[ing] = 0;
-          menuShopList[ing] += currentMenuIngredients[ing]; // Cộng dồn số lượng
+          menuShopList[ing] += currentMenuIngredients[ing];
         }
       }
 
