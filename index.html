@@ -85,6 +85,7 @@
     .modal-input-group label { display: block; font-size: 0.9rem; color: #4b5563; margin-bottom: 6px; font-weight: 600; }
     .modal-input-group input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; outline: none;}
     .modal-input-group input:focus { border-color: #14b8a6; }
+    
     .modal-btns { display: flex; gap: 10px; margin-top: 16px; }
     .modal-btns button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; }
     .modal-cancel { background: #f3f4f6; color: #4b5563; }
@@ -102,47 +103,38 @@
     .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 0 16px 20px; }
     .menu-btn { background: #fff; border: 2px solid #e5e7eb; padding: 14px 10px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; color: #374151; cursor: pointer; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
     .menu-btn:active { background: #f3f4f6; }
-    
-    .ingredient-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-    .ing-btn { padding: 8px 12px; background: #f3f4f6; border: 2px solid transparent; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #4b5563; }
-    .ing-btn.selected { background: #ccfbf1; border-color: #14b8a6; color: #0f766e; }
 
-    .shop-list-item { display: flex; justify-content: space-between; padding: 10px 16px; background: #fff; border-bottom: 1px solid #e5e7eb; font-size: 0.95rem;}
+    /* BỘ ĐẾM SỐ LƯỢNG (+ / -) */
+    .counter-group { display: flex; align-items: center; justify-content: space-between; background: #f3f4f6; border-radius: 12px; padding: 6px; margin-bottom: 12px; }
+    .counter-group span { font-weight: 600; color: #374151; font-size: 0.95rem; padding-left: 10px;}
+    .counter-controls { display: flex; align-items: center; gap: 12px; }
+    .counter-btn { background: #fff; border: 2px solid #e5e7eb; width: 36px; height: 36px; border-radius: 8px; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f766e; }
+    .counter-btn:active { background: #e5e7eb; }
+    .counter-val { font-weight: 700; font-size: 1.1rem; min-width: 20px; text-align: center; color: #0f766e;}
+
+    /* INGREDIENTS VỚI BỘ ĐẾM */
+    .ingredient-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #e5e7eb; }
+    .ingredient-item:last-child { border-bottom: none; }
+    .ingredient-item span { font-size: 0.9rem; font-weight: 500; color: #4b5563; }
+    .ing-counter { display: flex; align-items: center; gap: 8px; }
+    .ing-btn { width: 28px; height: 28px; border-radius: 6px; background: #e5e7eb; border: none; font-size: 1rem; font-weight: 700; color: #374151; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .ing-val { font-size: 0.95rem; font-weight: 600; width: 20px; text-align: center; }
+
+    /* SHOPPING LIST EDIT */
+    .shop-list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: #fff; border-bottom: 1px solid #e5e7eb; font-size: 0.95rem;}
     .shop-list-item:first-child { border-top-left-radius: 12px; border-top-right-radius: 12px; }
     .shop-list-item:last-child { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-bottom: none; }
-    .shop-qty { background: #0f766e; color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: 700; font-size: 0.8rem;}
+    
+    /* CUSTOM ING INPUT */
+    .custom-ing-row { display: flex; gap: 8px; margin-bottom: 12px; }
+    .custom-ing-row input { flex: 1; padding: 8px 12px; border-radius: 8px; border: 2px solid #e5e7eb; outline: none; font-size: 0.9rem; }
+    .custom-ing-row input:focus { border-color: #14b8a6; }
+    .custom-ing-row button { padding: 0 16px; background: #0f766e; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
-    /* TABS (Cập nhật icon to hơn và hạ thấp thanh công cụ) */
-    .tab-bar { 
-      position: fixed; 
-      bottom: 0; 
-      left: 0; 
-      right: 0; 
-      background: #fff; 
-      display: flex; 
-      border-top: 1px solid #e5e7eb; 
-      padding-bottom: calc(15px + env(safe-area-inset-bottom)); /* Hạ thấp xuống */
-      box-shadow: 0 -4px 15px rgba(0,0,0,0.05); 
-      z-index: 1000; 
-      border-radius: 20px 20px 0 0; 
-    }
-    .tab-btn { 
-      flex: 1; 
-      padding: 10px 2px 12px 2px; 
-      background: none; 
-      border: none; 
-      font-size: 0.7rem; 
-      color: #9ca3af; 
-      cursor: pointer; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      gap: 6px; 
-    }
-    .tab-btn .icon { 
-      font-size: 2.1rem; /* Tăng kích thước icon */
-      margin-bottom: 2px;
-    }
+    /* TABS (Căn giữa các icon) */
+    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: calc(15px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; border-radius: 20px 20px 0 0; height: 75px; }
+    .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; font-size: 0.7rem; color: #9ca3af; cursor: pointer; gap: 2px; }
+    .tab-btn .icon { font-size: 1.8rem; }
     .tab-btn.active { color: #0f766e; font-weight: 600; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -255,9 +247,17 @@
         <label>Unit Price (€)</label>
         <input type="text" id="modal-price" inputmode="decimal" placeholder="e.g. 2,49">
       </div>
-      <div class="modal-input-group">
-        <label>Quantity</label>
-        <input type="number" id="modal-qty" min="1" placeholder="Default is 1">
+      <div class="modal-input-group" id="modal-weight-group" style="display: none;">
+        <label>Weight (g)</label>
+        <input type="number" id="modal-weight" placeholder="e.g. 500">
+      </div>
+      <div class="counter-group">
+        <span>Quantity</span>
+        <div class="counter-controls">
+          <button class="counter-btn" onclick="updateModalQty(-1)">-</button>
+          <span class="counter-val" id="modal-qty-val">1</span>
+          <button class="counter-btn" onclick="updateModalQty(1)">+</button>
+        </div>
       </div>
       <div class="modal-btns">
         <button class="modal-cancel" id="modal-cancel-btn">Cancel</button>
@@ -273,19 +273,28 @@
       
       <!-- Ô nhập tên món (chỉ hiện khi chọn Other) -->
       <div class="modal-input-group" id="menu-dish-name-group" style="display: none;">
-        <label>Dish (Tên món ăn)</label>
+        <label>Dish</label>
         <input type="text" id="menu-dish-name" placeholder="Enter dish name...">
       </div>
 
-      <div class="modal-input-group">
-        <label>Meal Quantity</label>
-        <input type="number" id="menu-modal-qty" min="1" placeholder="Default is 1">
+      <div class="counter-group">
+        <span>Meal Quantity</span>
+        <div class="counter-controls">
+          <button class="counter-btn" onclick="updateMenuQty(-1)">-</button>
+          <span class="counter-val" id="menu-qty-val">1</span>
+          <button class="counter-btn" onclick="updateMenuQty(1)">+</button>
+        </div>
       </div>
 
       <div class="modal-input-group">
-        <label>Ingredients (Chọn nguyên liệu)</label>
-        <div class="ingredient-list" id="menu-ingredients">
+        <label>Ingredients</label>
+        <div id="menu-ingredients" style="background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 12px;">
           <!-- Được tạo tự động -->
+        </div>
+        <!-- Ô nhập nguyên liệu tự do cho món Other -->
+        <div class="custom-ing-row" id="custom-ing-row" style="display: none;">
+          <input type="text" id="custom-ing-name" placeholder="Enter custom ingredient...">
+          <button id="add-custom-ing-btn">Add</button>
         </div>
       </div>
 
@@ -296,11 +305,11 @@
     </div>
   </div>
 
-  <!-- TAB BAR (5 nút) -->
+  <!-- TAB BAR -->
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="cart"><span class="icon">🧺</span>Cart</button>
-    <button class="tab-btn" data-tab="add"><span class="icon">➕</span>Add</button>
     <button class="tab-btn" data-tab="menu"><span class="icon">🍽️</span>Menu</button>
+    <button class="tab-btn" data-tab="add"><span class="icon">➕</span>Add</button>
     <button class="tab-btn" data-tab="history"><span class="icon">📜</span>History</button>
     <button class="tab-btn" data-tab="stats"><span class="icon">📊</span>Stats</button>
   </div>
@@ -314,7 +323,6 @@
     
     let currentCategory = '', selectedDetail = '';
     let currentDish = '';
-    let selectedIngredients = [];
 
     const dishPresets = {
       "Mì Ý": ["Mì Ý", "Cà chua", "Thịt heo bằm", "Sốt cà chua", "Hành tây", "Tương ớt", "Other"],
@@ -360,170 +368,46 @@
       }
     };
 
-    // RENDER MENU BUTTONS
-    function renderMenuBtns() {
-      const grid = document.getElementById('menu-grid');
-      grid.innerHTML = '';
-      Object.keys(dishPresets).forEach(dish => {
-        const btn = document.createElement('button');
-        btn.className = 'menu-btn';
-        btn.textContent = dish;
-        btn.onclick = () => openMenuModal(dish);
-        grid.appendChild(btn);
-      });
-    }
-
-    // OPEN MENU MODAL
-    let currentIngButtons = [];
-    function openMenuModal(dish) {
-      currentDish = dish;
-      selectedIngredients = [];
-      document.getElementById('menu-modal-title').textContent = dish;
-      document.getElementById('menu-modal-qty').value = '';
-      
-      const ingContainer = document.getElementById('menu-ingredients');
-      const dishNameGroup = document.getElementById('menu-dish-name-group');
-      ingContainer.innerHTML = '';
-
-      if (dish === 'Other') {
-        dishNameGroup.style.display = 'block';
-        document.getElementById('menu-dish-name').value = '';
-      } else {
-        dishNameGroup.style.display = 'none';
-      }
-
-      dishPresets[dish].forEach(ing => {
-        const btn = document.createElement('button');
-        btn.className = 'ing-btn';
-        btn.textContent = ing;
-        btn.onclick = () => {
-          if (ing === 'Other') {
-            const customIng = prompt("Enter ingredient name:");
-            if (customIng && customIng.trim() !== '') {
-              const customBtn = document.createElement('button');
-              customBtn.className = 'ing-btn selected';
-              customBtn.textContent = customIng.trim();
-              customBtn.onclick = () => { customBtn.classList.toggle('selected'); updateSelectedIngredients(); };
-              ingContainer.insertBefore(customBtn, btn);
-              selectedIngredients.push(customIng.trim());
-            }
-          } else {
-            btn.classList.toggle('selected');
-            updateSelectedIngredients();
-          }
-        };
-        ingContainer.appendChild(btn);
-        currentIngButtons.push(btn);
-      });
-      
-      document.getElementById('menu-modal').classList.add('show');
-    }
-
-    function updateSelectedIngredients() {
-      selectedIngredients = [];
-      document.querySelectorAll('#menu-ingredients .ing-btn.selected').forEach(btn => {
-        selectedIngredients.push(btn.textContent);
-      });
-    }
-
-    // CONFIRM MENU MODAL
-    document.getElementById('menu-confirm-btn').onclick = () => {
-      let dishName = currentDish;
-      if (currentDish === 'Other') {
-        const customInput = document.getElementById('menu-dish-name');
-        if (customInput && customInput.value.trim()) {
-          dishName = customInput.value.trim();
-        } else {
-          return alert('Please enter a dish name.');
-        }
-      }
-
-      const qty = parseInt(document.getElementById('menu-modal-qty').value) || 1;
-      updateSelectedIngredients();
-
-      if (selectedIngredients.length === 0) {
-        return alert('Please select at least one ingredient.');
-      }
-
-      // Lưu vào danh sách đi chợ
-      selectedIngredients.forEach(ing => {
-        if (!menuShopList[ing]) menuShopList[ing] = 0;
-        menuShopList[ing] += qty;
-      });
-
-      localStorage.setItem('menuShopList', JSON.stringify(menuShopList));
-      renderMenuShoppingList();
-      document.getElementById('menu-modal').classList.remove('show');
-
-      const toast = document.getElementById('toast');
-      toast.textContent = 'Added to Shopping List!';
-      toast.classList.add('show');
-      setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.textContent = 'Added to cart!', 300);
-      }, 2000);
-    };
-
-    // RENDER SHOPPING LIST
-    function renderMenuShoppingList() {
-      const container = document.getElementById('menu-shopping-list');
-      const keys = Object.keys(menuShopList);
-
-      if (keys.length === 0) {
-        container.innerHTML = '<div class="empty-cart" style="padding: 20px;">Your shopping list is empty</div>';
-        return;
-      }
-
-      container.innerHTML = '';
-      keys.sort().forEach(ing => {
-        const div = document.createElement('div');
-        div.className = 'shop-list-item';
-        div.innerHTML = `<span>${ing}</span> <span class="shop-qty">x${menuShopList[ing]}</span>`;
-        container.appendChild(div);
-      });
-    }
-
-    // CLEAR SHOPPING LIST
-    document.getElementById('clear-shop-list-btn').onclick = () => {
-      if (confirm("Clear the entire shopping list?")) {
-        menuShopList = {};
-        localStorage.setItem('menuShopList', '{}');
-        renderMenuShoppingList();
-      }
-    };
-
-    // CATEGORY & MODAL ADD PRODUCT (Giữ nguyên)
+    // ===== PHẦN ADD PRODUCT =====
     const catBtns = document.querySelectorAll('.category-btn');
     const modal = document.getElementById('custom-modal');
     const modalOptions = document.getElementById('modal-options');
     const modalNameGroup = document.getElementById('modal-name-group');
     const modalNameInput = document.getElementById('modal-name-input');
     const modalPrice = document.getElementById('modal-price');
-    const modalQty = document.getElementById('modal-qty');
+    const modalWeightGroup = document.getElementById('modal-weight-group');
+    const modalWeight = document.getElementById('modal-weight');
     const spiceOptions = ['Sugar', 'Salt', 'Pepper', 'Chillies', 'Soy Sauce', 'Hot Chilli Sauce'];
+    
+    let currentAddQty = 1;
+    window.updateModalQty = (change) => {
+      currentAddQty = Math.max(1, currentAddQty + change);
+      document.getElementById('modal-qty-val').textContent = currentAddQty;
+    };
 
     function openModal(cat) {
       document.getElementById('modal-title').textContent = `Add ${cat}`;
       modalOptions.innerHTML = ''; modalOptions.style.display = 'none';
       modalNameGroup.style.display = 'none'; modalNameInput.value = '';
-      modalPrice.value = ''; modalQty.value = ''; selectedDetail = '';
+      modalPrice.value = ''; selectedDetail = '';
+      modalWeightGroup.style.display = 'none'; modalWeight.value = '';
+      currentAddQty = 1; document.getElementById('modal-qty-val').textContent = '1';
 
-      if (['Beef', 'Pork', 'Chicken', 'Fish', 'Vegetables', 'Spices'].includes(cat)) {
-        if (cat === 'Beef' || cat === 'Pork') {
-          modalOptions.style.display = 'grid';
-          ['Thịt bằm', 'Thịt mảng steak'].forEach(opt => {
-            const btn = document.createElement('button'); btn.textContent = opt;
-            btn.onclick = () => { modalOptions.querySelectorAll('button').forEach(b => b.classList.remove('selected-opt')); btn.classList.add('selected-opt'); selectedDetail = opt; };
-            modalOptions.appendChild(btn);
-          });
-        } else if (cat === 'Chicken') {
-          modalOptions.style.display = 'grid';
-          ['Cánh gà', 'Đùi gà', 'Ức gà'].forEach(opt => {
-            const btn = document.createElement('button'); btn.textContent = opt;
-            btn.onclick = () => { modalOptions.querySelectorAll('button').forEach(b => b.classList.remove('selected-opt')); btn.classList.add('selected-opt'); selectedDetail = opt; };
-            modalOptions.appendChild(btn);
-          });
-        } else if (cat === 'Spices') {
+      if (['Beef', 'Pork', 'Chicken'].includes(cat)) {
+        modalWeightGroup.style.display = 'block'; // Hiện ô nhập weight cho thịt
+        modalOptions.style.display = 'grid';
+        let opts = [];
+        if (cat === 'Beef') opts = ['Thịt bằm', 'Thịt mảng steak', 'Thịt cục'];
+        else if (cat === 'Pork') opts = ['Thịt bằm', 'Thịt mảng steak'];
+        else if (cat === 'Chicken') opts = ['Cánh gà', 'Đùi gà', 'Ức gà'];
+
+        opts.forEach(opt => {
+          const btn = document.createElement('button'); btn.textContent = opt;
+          btn.onclick = () => { modalOptions.querySelectorAll('button').forEach(b => b.classList.remove('selected-opt')); btn.classList.add('selected-opt'); selectedDetail = opt; };
+          modalOptions.appendChild(btn);
+        });
+      } else if (['Fish', 'Vegetables', 'Spices'].includes(cat)) {
+        if (cat === 'Spices') {
           modalOptions.style.display = 'grid';
           spiceOptions.forEach(opt => {
             const btn = document.createElement('button'); btn.textContent = opt;
@@ -548,13 +432,14 @@
     document.getElementById('modal-confirm-btn').onclick = () => {
       let finalName = '';
       const cat = currentCategory;
+      let weightVal = modalWeight.value ? ` (${modalWeight.value}g)` : '';
 
       if (['Beef', 'Pork', 'Chicken'].includes(cat)) {
         if (!selectedDetail) return alert('Please select a detail option.');
-        finalName = `${cat}: ${selectedDetail}`;
+        finalName = `${cat}: ${selectedDetail}${weightVal}`;
       } else if (['Fish', 'Vegetables', 'Spices'].includes(cat)) {
         if (!modalNameInput.value.trim() && !selectedDetail) return alert('Please enter or select a name.');
-        finalName = `${cat}: ${modalNameInput.value.trim() || selectedDetail}`;
+        finalName = `${cat}: ${modalNameInput.value.trim() || selectedDetail}${weightVal}`;
       } else if (cat === 'Other') {
         if (!modalNameInput.value.trim()) return alert('Please enter a product name.');
         finalName = modalNameInput.value.trim();
@@ -565,10 +450,7 @@
       const price = parsePrice(modalPrice.value);
       if (price <= 0) return alert('Please enter a valid price');
 
-      let qty = parseInt(modalQty.value);
-      if (isNaN(qty) || qty < 1) qty = 1;
-
-      cart.push({ store: document.getElementById('store-select').value, name: finalName, category: cat, unitPrice: price, quantity: qty });
+      cart.push({ store: document.getElementById('store-select').value, name: finalName, category: cat, unitPrice: price, quantity: currentAddQty });
       saveCart(); renderCart();
       
       modal.classList.remove('show');
@@ -590,6 +472,184 @@
       };
     });
 
+
+    // ===== PHẦN MENU =====
+    function renderMenuBtns() {
+      const grid = document.getElementById('menu-grid');
+      grid.innerHTML = '';
+      Object.keys(dishPresets).forEach(dish => {
+        const btn = document.createElement('button');
+        btn.className = 'menu-btn';
+        btn.textContent = dish;
+        btn.onclick = () => openMenuModal(dish);
+        grid.appendChild(btn);
+      });
+    }
+
+    let currentMealQty = 1;
+    window.updateMenuQty = (change) => {
+      currentMealQty = Math.max(1, currentMealQty + change);
+      document.getElementById('menu-qty-val').textContent = currentMealQty;
+    };
+    
+    // Biến lưu trữ nguyên liệu đang chọn trong Menu
+    let currentMenuIngredients = {}; 
+
+    function openMenuModal(dish) {
+      currentDish = dish;
+      currentMenuIngredients = {};
+      currentMealQty = 1;
+      document.getElementById('menu-qty-val').textContent = '1';
+      
+      document.getElementById('menu-modal-title').textContent = dish;
+      document.getElementById('menu-dish-name').value = '';
+      
+      const dishNameGroup = document.getElementById('menu-dish-name-group');
+      const customIngRow = document.getElementById('custom-ing-row');
+      const ingContainer = document.getElementById('menu-ingredients');
+      ingContainer.innerHTML = '';
+
+      if (dish === 'Other') {
+        dishNameGroup.style.display = 'block';
+        customIngRow.style.display = 'flex';
+      } else {
+        dishNameGroup.style.display = 'none';
+        customIngRow.style.display = 'none';
+      }
+
+      let ingsToRender = [...dishPresets[dish]];
+      if(dish !== 'Other') {
+        ingsToRender = ingsToRender.filter(i => i !== 'Other');
+      }
+
+      ingsToRender.forEach(ing => {
+        currentMenuIngredients[ing] = 0;
+        const div = document.createElement('div');
+        div.className = 'ingredient-item';
+        div.innerHTML = `
+          <span>${ing}</span>
+          <div class="ing-counter">
+            <button class="ing-btn" onclick="updateIngQty('${ing}', -1)">-</button>
+            <span class="ing-val" id="ing-val-${ing}">0</span>
+            <button class="ing-btn" onclick="updateIngQty('${ing}', 1)">+</button>
+          </div>
+        `;
+        ingContainer.appendChild(div);
+      });
+      
+      document.getElementById('menu-modal').classList.add('show');
+    }
+
+    window.updateIngQty = (ing, change) => {
+      currentMenuIngredients[ing] = Math.max(0, currentMenuIngredients[ing] + change);
+      document.getElementById(`ing-val-${ing}`).textContent = currentMenuIngredients[ing];
+    };
+
+    // Thêm nguyên liệu tự do cho món Other
+    document.getElementById('add-custom-ing-btn').onclick = () => {
+      const input = document.getElementById('custom-ing-name');
+      const name = input.value.trim();
+      if (!name) return;
+      if (currentMenuIngredients[name] !== undefined) {
+        alert('Ingredient already exists!');
+        return;
+      }
+      currentMenuIngredients[name] = 0;
+      
+      const ingContainer = document.getElementById('menu-ingredients');
+      const div = document.createElement('div');
+      div.className = 'ingredient-item';
+      div.innerHTML = `
+        <span>${name}</span>
+        <div class="ing-counter">
+          <button class="ing-btn" onclick="updateIngQty('${name}', -1)">-</button>
+          <span class="ing-val" id="ing-val-${name}">0</span>
+          <button class="ing-btn" onclick="updateIngQty('${name}', 1)">+</button>
+        </div>
+      `;
+      ingContainer.appendChild(div);
+      input.value = '';
+    };
+
+    document.getElementById('menu-confirm-btn').onclick = () => {
+      let dishName = currentDish;
+      if (currentDish === 'Other') {
+        const customName = document.getElementById('menu-dish-name').value.trim();
+        if (customName) dishName = customName;
+        else return alert('Please enter a dish name.');
+      }
+
+      let hasIngredient = false;
+      for (let ing in currentMenuIngredients) {
+        if (currentMenuIngredients[ing] > 0) {
+          hasIngredient = true;
+          if (!menuShopList[ing]) menuShopList[ing] = 0;
+          menuShopList[ing] += currentMenuIngredients[ing]; // Cộng dồn số lượng
+        }
+      }
+
+      if (!hasIngredient) return alert('Please select at least one ingredient (quantity > 0).');
+
+      localStorage.setItem('menuShopList', JSON.stringify(menuShopList));
+      renderMenuShoppingList();
+      document.getElementById('menu-modal').classList.remove('show');
+
+      const toast = document.getElementById('toast');
+      toast.textContent = 'Added to Shopping List!';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    };
+
+    // ===== SHOPPING LIST EDIT =====
+    function renderMenuShoppingList() {
+      const container = document.getElementById('menu-shopping-list');
+      const keys = Object.keys(menuShopList).filter(k => menuShopList[k] > 0);
+
+      if (keys.length === 0) {
+        container.innerHTML = '<div class="empty-cart" style="padding: 20px;">Your shopping list is empty</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      keys.sort().forEach(ing => {
+        const div = document.createElement('div');
+        div.className = 'shop-list-item';
+        div.innerHTML = `
+          <span>${ing}</span> 
+          <div class="ing-counter">
+            <button class="ing-btn" onclick="updateShopQty('${ing}', -1)">-</button>
+            <span class="ing-val">${menuShopList[ing]}</span>
+            <button class="ing-btn" onclick="updateShopQty('${ing}', 1)">+</button>
+            <button class="ing-btn" style="color: #dc2626; background: #fee2e2; margin-left: 4px;" onclick="deleteShopItem('${ing}')">🗑️</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.updateShopQty = (ing, change) => {
+      menuShopList[ing] += change;
+      if (menuShopList[ing] <= 0) delete menuShopList[ing];
+      localStorage.setItem('menuShopList', JSON.stringify(menuShopList));
+      renderMenuShoppingList();
+    };
+
+    window.deleteShopItem = (ing) => {
+      delete menuShopList[ing];
+      localStorage.setItem('menuShopList', JSON.stringify(menuShopList));
+      renderMenuShoppingList();
+    };
+
+    document.getElementById('clear-shop-list-btn').onclick = () => {
+      if (confirm("Clear the entire shopping list?")) {
+        menuShopList = {};
+        localStorage.setItem('menuShopList', '{}');
+        renderMenuShoppingList();
+      }
+    };
+
+
+    // ===== CART & HISTORY LOGIC =====
     function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); }
 
     function renderCart() {
@@ -619,7 +679,6 @@
       document.getElementById('warn-msg').classList.toggle('show', remaining < 0);
     }
 
-    // SAVE HISTORY
     document.getElementById('save-trip-btn').onclick = () => {
       if (cart.length === 0) return;
       const total = cart.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0), date = new Date().toLocaleString('en-GB');
@@ -703,7 +762,7 @@
       }).catch(() => {});
     }
 
-    // MANIFEST (Tự động tạo)
+    // MANIFEST
     const manifestData = {
       name: "Min Buy", 
       short_name: "Min Buy", 
