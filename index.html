@@ -112,10 +112,37 @@
     .shop-list-item:last-child { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-bottom: none; }
     .shop-qty { background: #0f766e; color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: 700; font-size: 0.8rem;}
 
-    /* TABS (Cập nhật để chứa 5 nút) */
-    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: calc(30px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; }
-    .tab-btn { flex: 1; padding: 8px 2px 12px 2px; background: none; border: none; font-size: 0.65rem; color: #9ca3af; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .tab-btn .icon { font-size: 1.5rem; }
+    /* TABS (Cập nhật icon to hơn và hạ thấp thanh công cụ) */
+    .tab-bar { 
+      position: fixed; 
+      bottom: 0; 
+      left: 0; 
+      right: 0; 
+      background: #fff; 
+      display: flex; 
+      border-top: 1px solid #e5e7eb; 
+      padding-bottom: calc(15px + env(safe-area-inset-bottom)); /* Hạ thấp xuống */
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.05); 
+      z-index: 1000; 
+      border-radius: 20px 20px 0 0; 
+    }
+    .tab-btn { 
+      flex: 1; 
+      padding: 10px 2px 12px 2px; 
+      background: none; 
+      border: none; 
+      font-size: 0.7rem; 
+      color: #9ca3af; 
+      cursor: pointer; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      gap: 6px; 
+    }
+    .tab-btn .icon { 
+      font-size: 2.1rem; /* Tăng kích thước icon */
+      margin-bottom: 2px;
+    }
     .tab-btn.active { color: #0f766e; font-weight: 600; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -244,8 +271,14 @@
     <div class="modal-content">
       <div class="modal-title" id="menu-modal-title">Dish Details</div>
       
+      <!-- Ô nhập tên món (chỉ hiện khi chọn Other) -->
+      <div class="modal-input-group" id="menu-dish-name-group" style="display: none;">
+        <label>Dish (Tên món ăn)</label>
+        <input type="text" id="menu-dish-name" placeholder="Enter dish name...">
+      </div>
+
       <div class="modal-input-group">
-        <label>Quantity (Số người ăn)</label>
+        <label>Meal Quantity</label>
         <input type="number" id="menu-modal-qty" min="1" placeholder="Default is 1">
       </div>
 
@@ -349,15 +382,14 @@
       document.getElementById('menu-modal-qty').value = '';
       
       const ingContainer = document.getElementById('menu-ingredients');
+      const dishNameGroup = document.getElementById('menu-dish-name-group');
       ingContainer.innerHTML = '';
 
       if (dish === 'Other') {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.id = 'custom-dish-name';
-        input.placeholder = 'Enter dish name...';
-        input.style = 'width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e5e7eb; margin-bottom: 10px;';
-        ingContainer.appendChild(input);
+        dishNameGroup.style.display = 'block';
+        document.getElementById('menu-dish-name').value = '';
+      } else {
+        dishNameGroup.style.display = 'none';
       }
 
       dishPresets[dish].forEach(ing => {
@@ -398,7 +430,7 @@
     document.getElementById('menu-confirm-btn').onclick = () => {
       let dishName = currentDish;
       if (currentDish === 'Other') {
-        const customInput = document.getElementById('custom-dish-name');
+        const customInput = document.getElementById('menu-dish-name');
         if (customInput && customInput.value.trim()) {
           dishName = customInput.value.trim();
         } else {
@@ -656,8 +688,8 @@
 
     // SERVICE WORKER
     if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js').then(reg => {
-  reg.update();
+      navigator.serviceWorker.register('service-worker.js').then(reg => {
+        reg.update();
         reg.addEventListener('updatefound', () => {
           const newWorker = reg.installing;
           newWorker.addEventListener('statechange', () => {
@@ -671,8 +703,7 @@
       }).catch(() => {});
     }
 
-    // MANIFEST
-        // TỰ ĐỘNG TẠO MANIFEST (Chuẩn cho GitHub Pages)
+    // MANIFEST (Tự động tạo)
     const manifestData = {
       name: "Min Buy", 
       short_name: "Min Buy", 
@@ -686,7 +717,8 @@
     manifestLink.rel = 'manifest';
     manifestLink.href = URL.createObjectURL(new Blob([JSON.stringify(manifestData)], {type: 'application/json'}));
     document.head.appendChild(manifestLink);
-        // INIT
+
+    // INIT
     renderMenuBtns();
     renderMenuShoppingList();
     renderCart();
