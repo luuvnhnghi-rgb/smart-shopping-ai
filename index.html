@@ -76,8 +76,10 @@
     /* MODAL */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
     .modal-overlay.show { display: flex; }
-    .modal-content { background: #fff; width: 100%; max-width: 400px; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;}
+    .modal-content { background: #fff; width: 100%; max-width: 400px; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; position: relative;}
+    
     .modal-title { font-size: 1.1rem; font-weight: 700; color: #0f766e; margin-bottom: 16px; text-align: center; }
+    
     .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
     .modal-grid button { padding: 12px; background: #f0fdfa; border: 2px solid #ccfbf1; border-radius: 12px; font-weight: 600; color: #0f766e; cursor: pointer; font-size: 0.95rem; }
     .modal-grid button.selected-opt { background: #99f6e4; border-color: #14b8a6; }
@@ -90,6 +92,10 @@
     .modal-btns button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; }
     .modal-cancel { background: #f3f4f6; color: #4b5563; }
     .modal-confirm { background: #0f766e; color: #fff; }
+
+    /* NÚT XÓA MÓN */
+    .delete-dish-btn { position: absolute; top: 15px; right: 15px; background: #fee2e2; color: #dc2626; border: none; width: 32px; height: 32px; border-radius: 8px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;}
+    .delete-dish-btn:active { background: #fca5a5; }
 
     /* STATS */
     .stats-card { background: #fff; margin: 16px; padding: 16px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow-x: auto; }
@@ -132,7 +138,7 @@
     .custom-ing-row button { padding: 0 16px; background: #0f766e; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
     /* TABS */
-    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: calc(15px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; border-radius: 20px 20px 0 0; height: 75px; }
+    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: calc(15px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; border-radius: 20px 20px 0 0; height: 90px; }
     .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; font-size: 0.7rem; color: #9ca3af; cursor: pointer; gap: 2px; }
     .tab-btn .icon { font-size: 1.8rem; }
     .tab-btn.active { color: #0f766e; font-weight: 600; }
@@ -269,6 +275,9 @@
   <!-- MODAL: MENU DETAIL -->
   <div class="modal-overlay" id="menu-modal">
     <div class="modal-content">
+      <!-- Nút Xóa Món (sẽ hiện tùy vào loại món) -->
+      <button class="delete-dish-btn" id="delete-dish-btn" style="display: none;" onclick="deleteCurrentDish()">✕</button>
+
       <div class="modal-title" id="menu-modal-title">Dish Details</div>
       
       <div class="modal-input-group" id="menu-dish-name-group" style="display: none;">
@@ -290,7 +299,7 @@
         <div id="menu-ingredients" style="background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 12px;">
           <!-- Được tạo tự động -->
         </div>
-        <!-- Ô nhập nguyên liệu tự do cho TẤT CẢ các món -->
+        <!-- Ô nhập nguyên liệu tự do -->
         <div class="custom-ing-row">
           <input type="text" id="custom-ing-name" placeholder="Add ingredient...">
           <button id="add-custom-ing-btn">Add</button>
@@ -319,8 +328,10 @@
     let budget = parseFloat(localStorage.getItem('budget')) || 50;
     let history = JSON.parse(localStorage.getItem('history') || '[]');
     let menuShopList = JSON.parse(localStorage.getItem('menuShopList') || '{}');
-    // Lưu các món custom do người dùng tạo
+    
+    // Lưu trữ thông tin món tự tạo và nguyên liệu tự thêm
     let customDishes = JSON.parse(localStorage.getItem('customDishes') || '{}');
+    let customIngredientsMap = JSON.parse(localStorage.getItem('customIngredientsMap') || '{}');
     
     let currentCategory = '', selectedDetail = '';
     let currentDish = '';
@@ -339,8 +350,8 @@
       "Bò xào": ["Thịt bò", "Hành tây", "Ớt chuông", "Tỏi"]
     };
 
-    // Gộp các món có sẵn và món custom
-    const dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
+    // Gộp món có sẵn và món custom
+    let dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
 
     const parsePrice = (str) => parseFloat(str.replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
     const formatPrice = (num) => num.toFixed(2).replace('.', ',') + ' €';
@@ -508,6 +519,8 @@
       
       const dishNameGroup = document.getElementById('menu-dish-name-group');
       const ingContainer = document.getElementById('menu-ingredients');
+      const deleteBtn = document.getElementById('delete-dish-btn');
+      
       ingContainer.innerHTML = '';
 
       if (dish === 'Other') {
@@ -516,29 +529,45 @@
         dishNameGroup.style.display = 'none';
       }
 
-      let ingsToRender = [...dishPresets[dish]];
-      
-      // Nếu là món tạo từ Other, nạp lại các nguyên liệu đã lưu
+      // Chỉ hiện nút xóa với món custom (không cho xóa món gốc hoặc Other)
       if (customDishes[dish]) {
-        ingsToRender = [...customDishes[dish]];
+        deleteBtn.style.display = 'flex';
+      } else {
+        deleteBtn.style.display = 'none';
       }
 
-      ingsToRender.forEach(ing => {
+      // Gộp nguyên liệu gốc và nguyên liệu đã tự thêm trước đó (nếu có)
+      let baseIngredients = [];
+      if (customDishes[dish]) {
+        baseIngredients = [...customDishes[dish]];
+      } else {
+        baseIngredients = [...(defaultDishPresets[dish] || [])];
+      }
+      
+      let customIngsForThisDish = customIngredientsMap[dish] || [];
+      let allIngredients = [...new Set([...baseIngredients, ...customIngsForThisDish])];
+
+      allIngredients.forEach(ing => {
         currentMenuIngredients[ing] = 0;
-        const div = document.createElement('div');
-        div.className = 'ingredient-item';
-        div.innerHTML = `
-          <span>${ing}</span>
-          <div class="ing-counter">
-            <button class="ing-btn" onclick="updateIngQty('${ing}', -1)">-</button>
-            <span class="ing-val" id="ing-val-${ing}">0</span>
-            <button class="ing-btn" onclick="updateIngQty('${ing}', 1)">+</button>
-          </div>
-        `;
-        ingContainer.appendChild(div);
+        addIngredientToModal(ing, 0);
       });
       
       document.getElementById('menu-modal').classList.add('show');
+    }
+
+    function addIngredientToModal(ing, defaultQty = 0) {
+      const ingContainer = document.getElementById('menu-ingredients');
+      const div = document.createElement('div');
+      div.className = 'ingredient-item';
+      div.innerHTML = `
+        <span>${ing}</span>
+        <div class="ing-counter">
+          <button class="ing-btn" onclick="updateIngQty('${ing}', -1)">-</button>
+          <span class="ing-val" id="ing-val-${ing}">${defaultQty}</span>
+          <button class="ing-btn" onclick="updateIngQty('${ing}', 1)">+</button>
+        </div>
+      `;
+      ingContainer.appendChild(div);
     }
 
     window.updateIngQty = (ing, change) => {
@@ -555,21 +584,35 @@
         alert('Ingredient already exists!');
         return;
       }
+      
       currentMenuIngredients[name] = 1; // Mặc định là 1 khi tự thêm
       
-      const ingContainer = document.getElementById('menu-ingredients');
-      const div = document.createElement('div');
-      div.className = 'ingredient-item';
-      div.innerHTML = `
-        <span>${name}</span>
-        <div class="ing-counter">
-          <button class="ing-btn" onclick="updateIngQty('${name}', -1)">-</button>
-          <span class="ing-val" id="ing-val-${name}">1</span>
-          <button class="ing-btn" onclick="updateIngQty('${name}', 1)">+</button>
-        </div>
-      `;
-      ingContainer.appendChild(div);
+      // Lưu nguyên liệu custom vào map để lần sau mở lại vẫn thấy
+      if (!customIngredientsMap[currentDish]) customIngredientsMap[currentDish] = [];
+      if (!customIngredientsMap[currentDish].includes(name)) {
+        customIngredientsMap[currentDish].push(name);
+        localStorage.setItem('customIngredientsMap', JSON.stringify(customIngredientsMap));
+      }
+      
+      addIngredientToModal(name, 1);
       input.value = '';
+    };
+
+    // Xóa món
+    window.deleteCurrentDish = () => {
+      if (confirm(`Are you sure you want to delete "${currentDish}" from the Recipe Menu?`)) {
+        delete customDishes[currentDish];
+        localStorage.setItem('customDishes', JSON.stringify(customDishes));
+        
+        delete customIngredientsMap[currentDish];
+        localStorage.setItem('customIngredientsMap', JSON.stringify(customIngredientsMap));
+        
+        // Cập nhật lại object dishPresets
+        dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
+        
+        renderMenuBtns();
+        document.getElementById('menu-modal').classList.remove('show');
+      }
     };
 
     document.getElementById('menu-confirm-btn').onclick = () => {
@@ -583,8 +626,9 @@
         if (!customDishes[dishName]) {
           customDishes[dishName] = Object.keys(currentMenuIngredients);
           localStorage.setItem('customDishes', JSON.stringify(customDishes));
+          
           // Gộp lại và render lại nút
-          Object.assign(dishPresets, customDishes);
+          dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
           renderMenuBtns();
         }
       }
