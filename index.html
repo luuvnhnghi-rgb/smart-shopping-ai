@@ -50,10 +50,18 @@
     .cart-item .detail { font-size: 0.85rem; color: #6b7280; margin-top: 2px; }
     .cart-item .total-price { font-weight: 700; color: #0f766e; font-size: 1.1rem; margin-left: 12px; }
     .cart-item .del-btn { background: none; border: none; font-size: 1.2rem; color: #ef4444; cursor: pointer; padding: 4px 8px; }
+    
     .empty-cart { text-align: center; padding: 40px 20px; color: #9ca3af; }
     .empty-cart .icon { font-size: 3rem; margin-bottom: 12px; }
     .btn-save-trip { background: #f59e0b; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
     
+    /* COOKED MENU LIST */
+    .menu-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: #fff; border-bottom: 1px solid #e5e7eb; font-size: 0.95rem;}
+    .menu-list-item:first-child { border-top-left-radius: 12px; border-top-right-radius: 12px; }
+    .menu-list-item:last-child { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-bottom: none; }
+    .menu-qty { background: #0f766e; color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: 700; font-size: 0.8rem;}
+    .menu-del-btn { background: #fee2e2; color: #dc2626; border: none; border-radius: 6px; width: 26px; height: 26px; font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
     .history-item { background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
     .history-header { display: flex; justify-content: space-between; align-items: center; font-weight: 700; margin-bottom: 8px; color: #374151; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;}
     .history-header-left { display: flex; flex-direction: column; }
@@ -138,7 +146,7 @@
     .custom-ing-row button { padding: 0 16px; background: #0f766e; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
     /* TABS */
-    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: calc(15px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; border-radius: 20px 20px 0 0; height: 120px; }
+    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: calc(15px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; border-radius: 20px 20px 0 0; height: 75px; }
     .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; font-size: 0.7rem; color: #9ca3af; cursor: pointer; gap: 2px; }
     .tab-btn .icon { font-size: 1.8rem; }
     .tab-btn.active { color: #0f766e; font-weight: 600; }
@@ -170,14 +178,27 @@
       <div class="budget-bar"><div class="budget-fill" id="budget-fill" style="width:0%"></div></div>
       <p class="warn-msg" id="warn-msg">⚠ You have exceeded your budget.</p>
     </div>
+    
+    <!-- DANH SÁCH MUA LẺ -->
     <div class="section-title">
-      <span>🛒 Shopping Cart</span>
+      <span>🧺 Shopping Cart</span>
       <button class="btn-save-trip" id="save-trip-btn" style="display: none;">Save Trip</button>
     </div>
     <div class="cart-list" id="cart-list">
       <div class="empty-cart" id="empty-cart">
-        <div class="icon">🛒</div><p>Your cart is empty</p>
+        <div class="icon">🧺</div><p>Your cart is empty</p>
       </div>
+    </div>
+
+    <!-- DANH SÁCH MÓN ĂN ĐÃ CHỌN -->
+    <div class="section-title">
+      <span>🍽️ Cooked Menu</span>
+    </div>
+    <div style="margin: 0 16px 24px;">
+      <div id="cart-menu-list" style="background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); overflow: hidden;">
+        <!-- Sẽ được render tự động -->
+      </div>
+      <button class="btn-primary" style="margin-top: 12px; background: #dc2626;" id="clear-cart-menu-btn">Clear Cooked Menu</button>
     </div>
   </div>
 
@@ -228,9 +249,9 @@
 
   <!-- TAB: HISTORY -->
   <div id="tab-history" class="tab-panel">
-    <div class="section-title">📜 Purchase History</div>
+    <div class="section-title">📆 Purchase History</div>
     <div class="cart-list" id="history-list">
-      <div class="empty-cart" id="empty-history"><div class="icon">📜</div><p>No history yet</p></div>
+      <div class="empty-cart" id="empty-history"><div class="icon">📆</div><p>No history yet</p></div>
     </div>
   </div>
 
@@ -315,16 +336,17 @@
 
   <!-- TAB BAR -->
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="cart"><span class="icon">🛒</span>Cart</button>
+    <button class="tab-btn active" data-tab="cart"><span class="icon">🧺</span>Cart</button>
     <button class="tab-btn" data-tab="menu"><span class="icon">🍽️</span>Menu</button>
     <button class="tab-btn" data-tab="add"><span class="icon">➕</span>Add</button>
-    <button class="tab-btn" data-tab="history"><span class="icon">📜</span>History</button>
+    <button class="tab-btn" data-tab="history"><span class="icon">📆</span>History</button>
     <button class="tab-btn" data-tab="stats"><span class="icon">📊</span>Stats</button>
   </div>
 
   <script>
     // DATA & STATE
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    let cartMenu = JSON.parse(localStorage.getItem('cartMenu') || '[]'); // Lưu món ăn đã chọn
     let budget = parseFloat(localStorage.getItem('budget')) || 50;
     let history = JSON.parse(localStorage.getItem('history') || '[]');
     let menuShopList = JSON.parse(localStorage.getItem('menuShopList') || '{}');
@@ -350,7 +372,6 @@
       "Bò xào": ["Thịt bò", "Hành tây", "Ớt chuông", "Tỏi"]
     };
 
-    // Gộp món có sẵn và món custom
     let dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
 
     const parsePrice = (str) => parseFloat(str.replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
@@ -369,6 +390,7 @@
         document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
         if (btn.dataset.tab === 'stats') renderStats();
         if (btn.dataset.tab === 'menu') renderMenuShoppingList();
+        if (btn.dataset.tab === 'cart') renderCartMenu();
       };
     });
 
@@ -529,7 +551,7 @@
         dishNameGroup.style.display = 'none';
       }
 
-      // Chỉ hiện nút xóa với món custom (không cho xóa món gốc hoặc Other)
+      // Chỉ hiện nút xóa với món custom
       if (customDishes[dish]) {
         deleteBtn.style.display = 'flex';
       } else {
@@ -540,8 +562,8 @@
       let baseIngredients = [];
       if (customDishes[dish]) {
         baseIngredients = [...customDishes[dish]];
-      } else {
-        baseIngredients = [...(defaultDishPresets[dish] || [])];
+      } else if (defaultDishPresets[dish]) {
+        baseIngredients = [...defaultDishPresets[dish]];
       }
       
       let customIngsForThisDish = customIngredientsMap[dish] || [];
@@ -575,7 +597,6 @@
       document.getElementById(`ing-val-${ing}`).textContent = currentMenuIngredients[ing];
     };
 
-    // Thêm nguyên liệu tự do cho bất kỳ món nào
     document.getElementById('add-custom-ing-btn').onclick = () => {
       const input = document.getElementById('custom-ing-name');
       const name = input.value.trim();
@@ -585,7 +606,7 @@
         return;
       }
       
-      currentMenuIngredients[name] = 1; // Mặc định là 1 khi tự thêm
+      currentMenuIngredients[name] = 1; 
       
       // Lưu nguyên liệu custom vào map để lần sau mở lại vẫn thấy
       if (!customIngredientsMap[currentDish]) customIngredientsMap[currentDish] = [];
@@ -598,7 +619,6 @@
       input.value = '';
     };
 
-    // Xóa món
     window.deleteCurrentDish = () => {
       if (confirm(`Are you sure you want to delete "${currentDish}" from the Recipe Menu?`)) {
         delete customDishes[currentDish];
@@ -607,7 +627,6 @@
         delete customIngredientsMap[currentDish];
         localStorage.setItem('customIngredientsMap', JSON.stringify(customIngredientsMap));
         
-        // Cập nhật lại object dishPresets
         dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
         
         renderMenuBtns();
@@ -617,17 +636,17 @@
 
     document.getElementById('menu-confirm-btn').onclick = () => {
       let dishName = currentDish;
+      
+      // Nếu là Other, tạo món mới, KHÔNG lưu nguyên liệu gốc mà chỉ lưu custom sau này
       if (currentDish === 'Other') {
         const customName = document.getElementById('menu-dish-name').value.trim();
         if (customName) dishName = customName;
         else return alert('Please enter a dish name.');
         
-        // Lưu món Other thành một món mới trong danh sách
         if (!customDishes[dishName]) {
-          customDishes[dishName] = Object.keys(currentMenuIngredients);
+          customDishes[dishName] = []; // Khởi tạo món Other trống
           localStorage.setItem('customDishes', JSON.stringify(customDishes));
           
-          // Gộp lại và render lại nút
           dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
           renderMenuBtns();
         }
@@ -644,12 +663,22 @@
 
       if (!hasIngredient) return alert('Please select at least one ingredient (quantity > 0).');
 
+      // Lưu món ăn vào cartMenu
+      const existingIndex = cartMenu.findIndex(m => m.name === dishName);
+      if (existingIndex > -1) {
+        cartMenu[existingIndex].quantity += currentMealQty;
+      } else {
+        cartMenu.push({ name: dishName, quantity: currentMealQty });
+      }
+      localStorage.setItem('cartMenu', JSON.stringify(cartMenu));
+
       localStorage.setItem('menuShopList', JSON.stringify(menuShopList));
       renderMenuShoppingList();
+      renderCartMenu();
       document.getElementById('menu-modal').classList.remove('show');
 
       const toast = document.getElementById('toast');
-      toast.textContent = 'Added to Shopping List!';
+      toast.textContent = 'Added to Menu & Shopping List!';
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2000);
     };
@@ -699,6 +728,44 @@
         menuShopList = {};
         localStorage.setItem('menuShopList', '{}');
         renderMenuShoppingList();
+      }
+    };
+
+
+    // ===== COOKED MENU TRONG TAB CART =====
+    function renderCartMenu() {
+      const container = document.getElementById('cart-menu-list');
+      if (cartMenu.length === 0) {
+        container.innerHTML = '<div class="empty-cart" style="padding: 20px;">No dishes selected</div>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      cartMenu.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'menu-list-item';
+        div.innerHTML = `
+          <span>${item.name}</span>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span class="menu-qty">x${item.quantity}</span>
+            <button class="menu-del-btn" onclick="deleteCartMenuItem(${index})">✕</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.deleteCartMenuItem = (index) => {
+      cartMenu.splice(index, 1);
+      localStorage.setItem('cartMenu', JSON.stringify(cartMenu));
+      renderCartMenu();
+    };
+
+    document.getElementById('clear-cart-menu-btn').onclick = () => {
+      if (confirm("Clear the entire Cooked Menu?")) {
+        cartMenu = [];
+        localStorage.setItem('cartMenu', '[]');
+        renderCartMenu();
       }
     };
 
@@ -834,6 +901,7 @@
     // INIT
     renderMenuBtns();
     renderMenuShoppingList();
+    renderCartMenu();
     renderCart();
     renderHistory();
   </script>
