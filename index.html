@@ -227,7 +227,6 @@
       <!-- Được tạo tự động bởi JS -->
     </div>
 
-    <!-- CHUYỂN COOKED MENU SANG ĐÂY -->
     <div class="section-title">
       <span>🍲 Cooked Menu</span>
     </div>
@@ -296,8 +295,8 @@
   <!-- MODAL: MENU DETAIL -->
   <div class="modal-overlay" id="menu-modal">
     <div class="modal-content">
-      <!-- Nút Xóa Món (sẽ hiện tùy vào loại món) -->
-      <button class="delete-dish-btn" id="delete-dish-btn" style="display: none;" onclick="deleteCurrentDish()">✕</button>
+      <!-- Nút Xóa Món (hiển thị cho TẤT CẢ các món) -->
+      <button class="delete-dish-btn" id="delete-dish-btn" onclick="deleteCurrentDish()">✕</button>
 
       <div class="modal-title" id="menu-modal-title">Dish Details</div>
       
@@ -351,8 +350,8 @@
     let history = JSON.parse(localStorage.getItem('history') || '[]');
     let menuShopList = JSON.parse(localStorage.getItem('menuShopList') || '{}');
     
+    // Lưu trữ thông tin món tự tạo
     let customDishes = JSON.parse(localStorage.getItem('customDishes') || '{}');
-    let customIngredientsMap = JSON.parse(localStorage.getItem('customIngredientsMap') || '{}');
     
     let currentCategory = '', selectedDetail = '';
     let currentDish = '';
@@ -542,8 +541,6 @@
       
       const dishNameGroup = document.getElementById('menu-dish-name-group');
       const ingContainer = document.getElementById('menu-ingredients');
-      const deleteBtn = document.getElementById('delete-dish-btn');
-      
       ingContainer.innerHTML = '';
 
       if (dish === 'Other') {
@@ -552,23 +549,18 @@
         dishNameGroup.style.display = 'none';
       }
 
-      if (customDishes[dish]) {
-        deleteBtn.style.display = 'flex';
-      } else {
-        deleteBtn.style.display = 'none';
-      }
-
-      let baseIngredients = [];
-      if (customDishes[dish]) {
-        baseIngredients = [...customDishes[dish]];
+      // Tìm nguyên liệu: Nếu là custom dish thì lấy nguyên liệu của custom dish, nếu là món gốc thì lấy món gốc
+      // Món "Other" luôn trống
+      let ingsToRender = [];
+      if (dish === 'Other') {
+        ingsToRender = [];
+      } else if (customDishes[dish]) {
+        ingsToRender = [...customDishes[dish]];
       } else if (defaultDishPresets[dish]) {
-        baseIngredients = [...defaultDishPresets[dish]];
+        ingsToRender = [...defaultDishPresets[dish]];
       }
-      
-      let customIngsForThisDish = customIngredientsMap[dish] || [];
-      let allIngredients = [...new Set([...baseIngredients, ...customIngsForThisDish])];
 
-      allIngredients.forEach(ing => {
+      ingsToRender.forEach(ing => {
         currentMenuIngredients[ing] = 0;
         addIngredientToModal(ing, 0);
       });
@@ -606,24 +598,16 @@
       }
       
       currentMenuIngredients[name] = 1; 
-      
-      if (!customIngredientsMap[currentDish]) customIngredientsMap[currentDish] = [];
-      if (!customIngredientsMap[currentDish].includes(name)) {
-        customIngredientsMap[currentDish].push(name);
-        localStorage.setItem('customIngredientsMap', JSON.stringify(customIngredientsMap));
-      }
-      
       addIngredientToModal(name, 1);
       input.value = '';
     };
 
+    // Xóa món (Áp dụng cho TẤT CẢ các món)
     window.deleteCurrentDish = () => {
       if (confirm(`Are you sure you want to delete "${currentDish}" from the Recipe Menu?`)) {
+        delete defaultDishPresets[currentDish];
         delete customDishes[currentDish];
         localStorage.setItem('customDishes', JSON.stringify(customDishes));
-        
-        delete customIngredientsMap[currentDish];
-        localStorage.setItem('customIngredientsMap', JSON.stringify(customIngredientsMap));
         
         dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
         
@@ -635,13 +619,15 @@
     document.getElementById('menu-confirm-btn').onclick = () => {
       let dishName = currentDish;
       
+      // Nếu là Other, tạo món mới và lưu các nguyên liệu hiện tại thành nguyên liệu của món đó
       if (currentDish === 'Other') {
         const customName = document.getElementById('menu-dish-name').value.trim();
         if (customName) dishName = customName;
         else return alert('Please enter a dish name.');
         
         if (!customDishes[dishName]) {
-          customDishes[dishName] = []; 
+          // Lưu lại danh sách các nguyên liệu vừa chọn cho món này
+          customDishes[dishName] = Object.keys(currentMenuIngredients);
           localStorage.setItem('customDishes', JSON.stringify(customDishes));
           
           dishPresets = { ...defaultDishPresets, ...customDishes, "Other": [] };
@@ -728,7 +714,7 @@
     };
 
 
-    // ===== COOKED MENU (Chuyển sang tab Menu) =====
+    // ===== COOKED MENU =====
     function renderCartMenu() {
       const container = document.getElementById('cart-menu-list');
       if (cartMenu.length === 0) {
