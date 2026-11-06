@@ -112,10 +112,10 @@
     .shop-list-item:last-child { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; border-bottom: none; }
     .shop-qty { background: #0f766e; color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: 700; font-size: 0.8rem;}
 
-    /* TABS */
+    /* TABS (Cập nhật để chứa 5 nút) */
     .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; border-top: 1px solid #e5e7eb; padding-bottom: calc(30px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; }
-    .tab-btn { flex: 1; padding: 12px 4px 16px 4px; background: none; border: none; font-size: 0.75rem; color: #9ca3af; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .tab-btn .icon { font-size: 1.8rem; }
+    .tab-btn { flex: 1; padding: 8px 2px 12px 2px; background: none; border: none; font-size: 0.65rem; color: #9ca3af; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .tab-btn .icon { font-size: 1.5rem; }
     .tab-btn.active { color: #0f766e; font-weight: 600; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -263,7 +263,7 @@
     </div>
   </div>
 
-  <!-- TAB BAR -->
+  <!-- TAB BAR (5 nút) -->
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="cart"><span class="icon">🧺</span>Cart</button>
     <button class="tab-btn" data-tab="add"><span class="icon">➕</span>Add</button>
